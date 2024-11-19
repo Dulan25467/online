@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import java.io.Console;
 import java.util.Scanner;
 
-@ComponentScan(basePackages = {"com.online.service", "com.online.repository", "com.online.controller"})
+@ComponentScan(basePackages = {"com.online.service", "com.online.repository", "com.online.controller", "com.online.domain", "com.online.resourse", "com.online.config", "com.online.websocket"})
 @SpringBootApplication
 public class OnlineApplication implements CommandLineRunner {
 
@@ -24,6 +24,7 @@ public class OnlineApplication implements CommandLineRunner {
     public OnlineApplication(@Lazy UserService userService) {
         this.userService = userService;
     }
+
 
     public static void main(String[] args) {
         SpringApplication.run(OnlineApplication.class, args);
@@ -38,6 +39,7 @@ public class OnlineApplication implements CommandLineRunner {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
     @Override
     public void run(String... args) {
