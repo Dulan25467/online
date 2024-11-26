@@ -1,6 +1,6 @@
 package com.online.service;
 
-import com.online.resourse.CustomerResourse;
+import com.online.resource.CustomerResourse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

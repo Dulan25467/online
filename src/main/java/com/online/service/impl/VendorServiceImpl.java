@@ -2,7 +2,7 @@ package com.online.service.impl;
 
 import com.online.domain.VendorDetail;
 import com.online.repository.VendorDao;
-import com.online.resourse.VenderResourse;
+import com.online.resource.VenderResourse;
 import com.online.service.VendorService;
 import lombok.Data;
 import org.modelmapper.ModelMapper;

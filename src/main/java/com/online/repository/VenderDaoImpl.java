@@ -1,7 +1,7 @@
 package com.online.repository;
 
 import com.online.domain.VendorDetail;
-import com.online.resourse.VenderResourse;
+import com.online.resource.VenderResourse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;

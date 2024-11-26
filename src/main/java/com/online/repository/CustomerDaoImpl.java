@@ -1,7 +1,7 @@
 package com.online.repository;
 
 import com.online.domain.CustomerDetails;
-import com.online.resourse.CustomerResourse;
+import com.online.resource.CustomerResourse;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;

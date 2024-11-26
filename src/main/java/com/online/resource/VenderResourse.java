@@ -1,4 +1,4 @@
-package com.online.resourse;
+package com.online.resource;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

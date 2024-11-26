@@ -1,6 +1,6 @@
 package com.online.service;
 
-import com.online.resourse.VenderResourse;
+import com.online.resource.VenderResourse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

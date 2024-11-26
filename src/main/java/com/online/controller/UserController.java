@@ -1,29 +1,49 @@
 package com.online.controller;
 
+import com.online.resource.UserResourse;
 import com.online.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/user")
 public class UserController {
 
-    private final UserService userService;
-
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private UserService userService;
 
     @PostMapping("/register")
-    public String register(@RequestParam String username, @RequestParam String password, @RequestParam String email, @RequestParam int phone, @RequestParam String address) {
-        userService.registerUser(username, password, email, phone, address);
-        return "User registered successfully!";
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserResourse userResource, BindingResult result) {
+        if (result.hasErrors()) {
+            // Log validation errors
+            result.getFieldErrors().forEach(error ->
+                    System.out.println("Validation error: " + error.getField() + " - " + error.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(result.getFieldErrors());
+        }
+
+        try {
+            UserResourse registeredUser = userService.registerUser(userResource);
+            return ResponseEntity.ok("User registered successfully: " + registeredUser);
+        } catch (Exception e) {
+            // Log any service or database-related exceptions
+            System.out.println("Error during registration: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
     }
 
+
+
+
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password) {
-        boolean isValid = userService.validateUser(username, password);
-        return isValid ? "Login successful!" : "Invalid credentials.";
+    public ResponseEntity<?> loginUser(@RequestBody UserResourse loginRequest) {
+        UserResourse userResource = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        return ResponseEntity.ok(userResource);
     }
+
 }

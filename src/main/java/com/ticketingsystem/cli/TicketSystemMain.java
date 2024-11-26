@@ -1,8 +1,6 @@
 package com.ticketingsystem.cli;
 
-import com.ticketingsystem.config.TicketSystemConfig;
 import com.ticketingsystem.producerconsumer.TicketManager;
-
 import java.util.Scanner;
 
 public class TicketSystemMain {
@@ -10,11 +8,14 @@ public class TicketSystemMain {
     public static void main(String[] args) {
         System.out.println("Welcome to the Ticketing System CLI");
 
-        // Initialize configuration
-        TicketSystemConfig config = new TicketSystemConfig();
+        // Default values for configuration
+        int maxTicketCapacity = 100;    // Max ticket capacity
+        int totalTicketsAvailable = 50; // Total tickets available
+        int ticketReleaseRate = 5;      // Ticket release rate
+        int customerRetrievalRate = 3;  // Customer retrieval rate
 
-        // Initialize the ticket manager
-        TicketManager ticketManager = new TicketManager(config);
+        // Initialize the ticket manager with configuration values
+        TicketManager ticketManager = new TicketManager(maxTicketCapacity, totalTicketsAvailable, ticketReleaseRate, customerRetrievalRate);
 
         // Command handling
         Scanner scanner = new Scanner(System.in);
@@ -33,8 +34,7 @@ public class TicketSystemMain {
             switch (command) {
                 case "1":
                     // Call to configure ticket system
-                    configureTicketSystem(config);
-                    ticketManager = new TicketManager(config); // Reinitialize the manager after configuration
+                    configureTicketSystem(ticketManager);
                     break;
 
                 case "2":
@@ -78,11 +78,25 @@ public class TicketSystemMain {
         scanner.close();
     }
 
-    // Method to handle configuration of ticket system
-    private static void configureTicketSystem(TicketSystemConfig config) {
+    private static void configureTicketSystem(TicketManager ticketManager) {
         System.out.println("Configuring Ticket System...");
 
-        // Setup configuration
-        config.setupConfiguration();
+        // Allow user to modify configuration, for example:
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter Max Ticket Capacity: ");
+        int maxTicketCapacity = scanner.nextInt();
+
+        System.out.print("Enter Total Tickets Available: ");
+        int totalTicketsAvailable = scanner.nextInt();
+
+        System.out.print("Enter Ticket Release Rate: ");
+        int ticketReleaseRate = scanner.nextInt();
+
+        System.out.print("Enter Customer Retrieval Rate: ");
+        int customerRetrievalRate = scanner.nextInt();
+
+
+        System.out.println("Ticket System configuration updated.");
     }
 }

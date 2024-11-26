@@ -1,5 +1,5 @@
 package com.online.controller;
-import com.online.resourse.CustomerResourse;
+import com.online.resource.CustomerResourse;
 import com.online.service.CustomerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

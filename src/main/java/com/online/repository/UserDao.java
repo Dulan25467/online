@@ -1,10 +1,10 @@
 package com.online.repository;
 
-import com.online.domain.User; // Ensure this imports your custom User class
+import com.online.domain.UserDomain;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserDao extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username);
-}
+public interface UserDao extends JpaRepository<UserDomain, Long> {
+    Optional<UserDomain> findByUsername(String username);
+    Optional<UserDomain> findByEmail(String email);}

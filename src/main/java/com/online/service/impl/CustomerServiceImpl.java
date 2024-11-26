@@ -2,7 +2,7 @@ package com.online.service.impl;
 
 import com.online.domain.CustomerDetails;
 import com.online.repository.CustomerDao;
-import com.online.resourse.CustomerResourse;
+import com.online.resource.CustomerResourse;
 import com.online.service.CustomerService;
 import lombok.Data;
 import org.modelmapper.ModelMapper;

@@ -1,11 +1,14 @@
 package com.ticketingsystem.producerconsumer;
 
 import com.ticketingsystem.model.TicketPool;
-import com.ticketingsystem.config.TicketSystemConfig;
 
 public class TicketManager {
     private final TicketPool ticketPool;
-    private final TicketSystemConfig config;
+    private final int maxTicketCapacity;
+    private final int totalTicketsAvailable;
+    private final int ticketReleaseRate;
+    private final int customerRetrievalRate;
+
     private boolean isRunning;
 
     private int vendorReleasedTickets;
@@ -14,9 +17,13 @@ public class TicketManager {
     private Thread vendorThread;
     private Thread customerThread;
 
-    public TicketManager(TicketSystemConfig config) {
-        this.config = config;
-        this.ticketPool = new TicketPool(config.getMaxTicketCapacity());
+    public TicketManager(int maxTicketCapacity, int totalTicketsAvailable, int ticketReleaseRate, int customerRetrievalRate) {
+        this.maxTicketCapacity = maxTicketCapacity;
+        this.totalTicketsAvailable = totalTicketsAvailable;
+        this.ticketReleaseRate = ticketReleaseRate;
+        this.customerRetrievalRate = customerRetrievalRate;
+
+        this.ticketPool = new TicketPool(maxTicketCapacity);
         this.vendorReleasedTickets = 0;
         this.customerBoughtTickets = 0;
         this.isRunning = false; // Default to not running
@@ -24,7 +31,6 @@ public class TicketManager {
 
     public void startOperations() {
         if (isRunning) {
-
             System.out.println("Ticket system is already running.");
             return; // Exit if already running
         }
@@ -34,7 +40,7 @@ public class TicketManager {
         // Vendor thread for releasing tickets
         vendorThread = new Thread(() -> {
             while (isRunning) {
-                releaseTickets(config.getTicketReleaseRate()); // Release tickets at a set rate
+                releaseTickets(ticketReleaseRate); // Release tickets at a set rate
                 try {
                     Thread.sleep(1000); // Sleep for 1 second to control release rate
                 } catch (InterruptedException e) {
@@ -46,7 +52,7 @@ public class TicketManager {
         // Customer thread for buying tickets
         customerThread = new Thread(() -> {
             while (isRunning) {
-                buyTickets(config.getCustomerRetrievalRate()); // Customers buy tickets at a set rate
+                buyTickets(customerRetrievalRate); // Customers buy tickets at a set rate
                 try {
                     Thread.sleep(1000); // Sleep for 1 second to control retrieval rate
                 } catch (InterruptedException e) {
@@ -85,7 +91,7 @@ public class TicketManager {
 
     public void releaseTickets(int numberOfTickets) {
         for (int i = 0; i < numberOfTickets; i++) {
-            if (vendorReleasedTickets >= config.getTotalTicketsAvailable()) {
+            if (vendorReleasedTickets >= totalTicketsAvailable) {
                 System.out.println("Vendor cannot add more tickets. Total tickets available limit reached.");
                 break;
             }
@@ -102,8 +108,6 @@ public class TicketManager {
         checkAndStopSystem(); // Check if the system should stop
     }
 
-
-
     public void buyTickets(int numberOfTickets) {
         for (int i = 0; i < numberOfTickets; i++) {
             String ticket = ticketPool.retrieveTicket();
@@ -117,14 +121,14 @@ public class TicketManager {
         }
         checkAndStopSystem(); // Check if the system should stop
     }
+
     private void checkAndStopSystem() {
-        if (vendorReleasedTickets >= config.getTotalTicketsAvailable()
-                && customerBoughtTickets >= config.getTotalTicketsAvailable()) {
+        if (vendorReleasedTickets >= totalTicketsAvailable
+                && customerBoughtTickets >= totalTicketsAvailable) {
             System.out.println("All tickets have been released and sold. Stopping the system...");
             stopOperations();
         }
     }
-
 
     public int getVendorReleasedTickets() {
         return vendorReleasedTickets;
