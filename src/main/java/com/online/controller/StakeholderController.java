@@ -1,6 +1,7 @@
 package com.online.controller;
 
 import com.online.domain.StakeholderDetails;
+import com.online.exeption.ApiResponse;
 import com.online.exeption.CommonExeption;
 import com.online.repository.StakeholderDao;
 import com.online.resource.StakeholderResourse;
@@ -32,72 +33,56 @@ public class StakeholderController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody StakeholderResourse loginRequest) {
-        // Find stakeholder by username
         Optional<StakeholderDetails> stakeholderDetails = Optional.ofNullable(stakeholderDao.findByUsername(loginRequest.getUsername()));
 
-        // Check if username exists
         if (stakeholderDetails.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(CommonExeption.createError("Username not found", "USER_NOT_FOUND", "/login"));        }
+                    .body(new ApiResponse("Username not found", false));
+        }
 
-        // Check if the password matches
         if (!stakeholderDetails.get().getPassword().equals(loginRequest.getPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(CommonExeption.createError("Username not found", "USER_NOT_FOUND", "/login"));        }
+                    .body(new ApiResponse("Incorrect password", false));
+        }
 
-        // If login is successful
-        return ResponseEntity.ok("Login successful!");
+        // On successful login, return a success message
+        return ResponseEntity.ok(new ApiResponse("Login successful", true));
     }
 
+
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody StakeholderResourse stakeholderResourse) {
+    public ResponseEntity<ApiResponse> register(@Valid @RequestBody StakeholderResourse stakeholderResourse) {
         CommonExeption exception = new CommonExeption();
 
-        // Check if the username already exists
-        if (stakeholderDao.findByUsername(stakeholderResourse.getUsername()) != null) {
+        // Validate username
+        Optional<StakeholderDetails> existingUser = Optional.ofNullable(stakeholderDao.findByUsername(stakeholderResourse.getUsername()));
+        if (existingUser.isPresent()) {
             exception.addError("username", "Username already exists");
             exception.setMessage("Username already exists");
             exception.setTimestamp(LocalDateTime.now().toString());
-            return ResponseEntity.badRequest().body(exception);
+            return ResponseEntity.badRequest().body(new ApiResponse(exception.getMessage(), false));
         }
 
-        // Perform additional field-level validations
-        validateStakeholderResource(stakeholderResourse, exception);
-
-        // If validation errors exist, return them
-        if (!exception.getErrors().isEmpty()) {
-            exception.setMessage("Validation failed for registration");
-            exception.setTimestamp(LocalDateTime.now().toString());
-            return ResponseEntity.badRequest().body(exception);
-        }
-
-        // Register the user
-        StakeholderResourse registeredStakeholder = stakeholderService.register(stakeholderResourse);
-        return ResponseEntity.ok(registeredStakeholder);
-    }
-
-    // Helper method for validation
-    private void validateStakeholderResource(StakeholderResourse stakeholderResourse, CommonExeption exception) {
+        // Validate fields
         if (stakeholderResourse.getUsername() == null || stakeholderResourse.getUsername().isEmpty()) {
             exception.addError("username", "Username is required");
         }
-        if (stakeholderResourse.getPassword() == null || stakeholderResourse.getPassword().isEmpty()) {
-            exception.addError("password", "Password is required");
+        // Additional validations...
+
+        if (!exception.getErrors().isEmpty()) {
+            exception.setMessage("Validation failed for registration");
+            exception.setTimestamp(LocalDateTime.now().toString());
+            return ResponseEntity.badRequest().body(new ApiResponse(exception.getMessage(), false));
         }
-        if (stakeholderResourse.getEmail() == null || stakeholderResourse.getEmail().isEmpty()) {
-            exception.addError("email", "Email is required");
-        } else if (!stakeholderResourse.getEmail().contains("@")) { // Basic email validation
-            exception.addError("email", "Email is invalid");
-        }
-        if (stakeholderResourse.getAddress() == null || stakeholderResourse.getAddress().isEmpty()) {
-            exception.addError("address", "Address is required");
-        }
-        if (stakeholderResourse.getPhone() == null || stakeholderResourse.getPhone().isEmpty()) {
-            exception.addError("phone", "Phone is required");
-        } else if (!stakeholderResourse.getPhone().matches("\\d{8,12}")) { // Check phone number length (8-12 digits)
-            exception.addError("phone", "Phone must be 8 to 12 digits");
-        }
+
+        // If no errors, proceed with registration
+        StakeholderResourse savedStakeholder = stakeholderService.register(stakeholderResourse);
+
+        // Send a successful response
+        return ResponseEntity.ok(new ApiResponse("Registration successful!", true, savedStakeholder));
     }
+
 
 
     @PutMapping("/update")

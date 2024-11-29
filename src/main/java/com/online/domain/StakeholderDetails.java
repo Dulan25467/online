@@ -24,6 +24,7 @@ public class StakeholderDetails {
     private String email;
     private String address;
     private String phone;
+    private String stakeholderType;
 
     private String createdBy;
     private LocalDateTime createdDate;  // Using LocalDateTime for timestamp
