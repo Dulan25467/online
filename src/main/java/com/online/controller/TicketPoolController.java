@@ -18,7 +18,7 @@ public class TicketPoolController {
     }
 
     // Endpoint to configure the system with ticket pool details
-    @PostMapping("/configure")
+    @PostMapping("/addEvent")
     public ResponseEntity<TicketPool> configureSystem(@RequestBody TicketPool ticketPool) {
         try {
             TicketPool savedConfig = ticketPoolService.configureSystem(ticketPool);
@@ -50,7 +50,6 @@ public class TicketPoolController {
         }
     }
 
-    // Endpoint to stop ticket pool operations
     @PostMapping("/stop")
     public ResponseEntity<String> stopTicketOperations() {
         try {
