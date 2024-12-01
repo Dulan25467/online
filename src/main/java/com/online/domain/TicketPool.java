@@ -15,7 +15,6 @@ public class TicketPool {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String eventName;
     private String eventDescription;
     private String eventLocation;
@@ -40,20 +39,4 @@ public class TicketPool {
     private String deletedBy;
     private String deletedDate;
 
-
-    public TicketPool(int i, int i1, int i2, int i3, String s) {
-
-    }
-
-
-    @Override
-    public String toString() {
-        return "TicketPool{" +
-                "totalTickets=" + totalTickets +
-                ", ticketReleaseRate=" + ticketReleaseRate +
-                ", customerRetrievalRate=" + customerRetrievalRate +
-                ", maxTicketCapacity=" + maxTicketCapacity +
-                ", statusMessage='" + statusMessage + '\'' +
-                '}';
-    }
 }

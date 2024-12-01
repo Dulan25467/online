@@ -4,18 +4,16 @@ import com.online.domain.TicketPool;
 import com.online.resource.TicketPoolResourse;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public interface TicketPoolService {
-        TicketPool configureSystem(TicketPool ticketPool);
-
-        TicketPool getStatus();
-
-        void startOperations();
-
-        void stopOperations();
 
         TicketPoolResourse addEvent(TicketPoolResourse ticketPoolResourse);
 
+        List<TicketPoolResourse> viewEvents();
 
-}
+        TicketPoolResourse updateEvent(TicketPoolResourse ticketPoolResourse);
+
+        boolean deleteEvent(Long id); }

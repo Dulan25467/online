@@ -19,4 +19,5 @@ public class TicketPoolResourse {
     private String eventOrganizer;
     private String eventContact;
     private String eventEmail;
+
 }
