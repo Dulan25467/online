@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StakeholderResourse {
+public class    StakeholderResourse {
     private String username;
     private String password;
     private String email;

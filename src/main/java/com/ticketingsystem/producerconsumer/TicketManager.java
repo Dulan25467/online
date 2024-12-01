@@ -3,11 +3,11 @@ package com.ticketingsystem.producerconsumer;
 import com.ticketingsystem.model.TicketPool;
 
 public class TicketManager {
-    private final TicketPool ticketPool;
-    private final int maxTicketCapacity;
-    private final int totalTicketsAvailable;
-    private final int ticketReleaseRate;
-    private final int customerRetrievalRate;
+    private TicketPool ticketPool;
+    private int maxTicketCapacity;
+    private int totalTicketsAvailable;
+    private int ticketReleaseRate;
+    private int customerRetrievalRate;
 
     private boolean isRunning;
 
@@ -93,9 +93,10 @@ public class TicketManager {
         for (int i = 0; i < numberOfTickets; i++) {
             if (vendorReleasedTickets >= totalTicketsAvailable) {
                 System.out.println("Vendor cannot add more tickets. Total tickets available limit reached.");
-                break;
+                break; // Stop releasing tickets once the limit is reached
             }
 
+            // Add ticket to the pool
             if (ticketPool.addTicket("Ticket-" + (vendorReleasedTickets + 1))) {
                 vendorReleasedTickets++;
                 System.out.println("Vendor added: Ticket-" + vendorReleasedTickets
@@ -144,5 +145,18 @@ public class TicketManager {
 
     public int getCurrentlyAvailableTickets() {
         return ticketPool.getMaxCapacity() - vendorReleasedTickets + customerBoughtTickets;
+    }
+
+    public void updateConfiguration(int maxTicketCapacity, int totalTicketsAvailable, int ticketReleaseRate, int customerRetrievalRate) {
+        this.maxTicketCapacity = maxTicketCapacity;
+        this.totalTicketsAvailable = totalTicketsAvailable;
+        this.ticketReleaseRate = ticketReleaseRate;
+        this.customerRetrievalRate = customerRetrievalRate;
+
+        // Update the TicketPool to reflect the new max capacity
+        this.ticketPool.setMaxCapacity(maxTicketCapacity);
+        this.vendorReleasedTickets = 0; // Reset the released tickets count
+        this.customerBoughtTickets = 0; // Reset the bought tickets count
+        System.out.println("Configuration updated.");
     }
 }

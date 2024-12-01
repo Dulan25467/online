@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class TicketPool {
-    private final Queue<String> tickets;
-    private final int maxCapacity;
+    private Queue<String> tickets;
+    private int maxCapacity;
 
     public TicketPool(int maxCapacity) {
         this.maxCapacity = maxCapacity;
@@ -26,5 +26,10 @@ public class TicketPool {
 
     public int getMaxCapacity() {
         return maxCapacity;
+    }
+
+    // Add method to change the max capacity if needed
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
     }
 }

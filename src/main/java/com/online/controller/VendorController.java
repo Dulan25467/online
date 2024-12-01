@@ -15,10 +15,6 @@ public class VendorController {
     @Autowired
     private VendorService vendorService;
 
-    @GetMapping("/getVenders")
-    public List<VenderResourse> getVenders(){
-        return vendorService.getAllVenders();
-    }
 
     @PostMapping("/addVender")
     public VenderResourse addVender(@RequestBody VenderResourse venderResourse){

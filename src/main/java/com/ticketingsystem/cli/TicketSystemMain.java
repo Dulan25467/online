@@ -96,6 +96,8 @@ public class TicketSystemMain {
         System.out.print("Enter Customer Retrieval Rate: ");
         int customerRetrievalRate = scanner.nextInt();
 
+        // Update TicketManager with new configuration
+        ticketManager.updateConfiguration(maxTicketCapacity, totalTicketsAvailable, ticketReleaseRate, customerRetrievalRate);
 
         System.out.println("Ticket System configuration updated.");
     }
