@@ -1,6 +1,7 @@
 package com.online.service;
 
 import com.online.domain.TicketPool;
+import com.online.resource.TicketPoolResourse;
 import org.springframework.stereotype.Service;
 
 
@@ -13,4 +14,8 @@ public interface TicketPoolService {
         void startOperations();
 
         void stopOperations();
+
+        TicketPoolResourse addEvent(TicketPoolResourse ticketPoolResourse);
+
+
 }

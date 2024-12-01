@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface TicketPoolDao extends JpaRepository<TicketPool, Long> {
 
-    Optional<TicketPool> findFirstByOrderByIdDesc();  // To get the most recent configuration
+    Optional<TicketPool> findById(Long id);
 }

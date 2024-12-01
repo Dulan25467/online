@@ -15,6 +15,7 @@ public class TicketPool {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String eventName;
     private String eventDescription;
     private String eventLocation;
@@ -22,7 +23,6 @@ public class TicketPool {
     private String eventTime;
     private String eventDuration;
     private String eventCategory;
-    private String eventStatus;
     private String eventOrganizer;
     private String eventContact;
     private String eventEmail;
