@@ -15,5 +15,4 @@ public class VendorController {
     @Autowired
     private VendorService vendorService;
 
-
 }
