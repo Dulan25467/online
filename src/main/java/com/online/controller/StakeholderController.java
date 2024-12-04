@@ -31,23 +31,44 @@ public class StakeholderController {
         this.stakeholderDao = stakeholderDao;
     }
 
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody StakeholderResourse loginRequest) {
-        Optional<StakeholderDetails> stakeholderDetails = Optional.ofNullable(stakeholderDao.findByUsername(loginRequest.getUsername()));
+        try {
+            // Fetch stakeholder details based on the username
+            StakeholderDetails stakeholderDetails = stakeholderDao.findByUsername(loginRequest.getUsername());
 
-        if (stakeholderDetails.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse("Username not found", false));
+            // Check if the stakeholder exists
+            if (stakeholderDetails == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ApiResponse("Username not found", false));
+            }
+
+            // Validate the password
+            if (!stakeholderDetails.getPassword().equals(loginRequest.getPassword())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ApiResponse("Incorrect password", false));
+            }
+
+            // Check stakeholder type
+            String stakeholderType = stakeholderDetails.getStakeholderType();
+            if (!"Vendor".equals(stakeholderType) && !"Customer".equals(stakeholderType)) {
+                throw new RuntimeException("Invalid stakeholder type.");
+            }
+
+            // If valid, return success with stakeholder type
+            return ResponseEntity.ok(new ApiResponse("Login successful", true, stakeholderType));
+
+        } catch (RuntimeException ex) {
+            // Handle unexpected runtime exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("An error occurred: " + ex.getMessage(), false));
         }
-
-        if (!stakeholderDetails.get().getPassword().equals(loginRequest.getPassword())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse("Incorrect password", false));
-        }
-
-        // On successful login, return a success message
-        return ResponseEntity.ok(new ApiResponse("Login successful", true));
     }
+
+
+
+
 
 
 

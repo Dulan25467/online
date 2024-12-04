@@ -14,10 +14,8 @@ public class TicketPoolResourse {
     private String eventLocation;
     private String eventDate;
     private String eventTime;
-    private String eventDuration;
     private String eventCategory;
-    private String eventOrganizer;
     private String eventContact;
-    private String eventEmail;
+    private String totalTickets;
 
 }

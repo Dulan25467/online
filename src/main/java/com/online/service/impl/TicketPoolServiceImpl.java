@@ -38,12 +38,9 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         ticketPool.setEventLocation(ticketPoolResourse.getEventLocation());
         ticketPool.setEventDate(ticketPoolResourse.getEventDate());
         ticketPool.setEventTime(ticketPoolResourse.getEventTime());
-        ticketPool.setEventDuration(ticketPoolResourse.getEventDuration());
         ticketPool.setEventCategory(ticketPoolResourse.getEventCategory());
-        ticketPool.setEventOrganizer(ticketPoolResourse.getEventOrganizer());
         ticketPool.setEventContact(ticketPoolResourse.getEventContact());
-        ticketPool.setEventEmail(ticketPoolResourse.getEventEmail());
-
+        ticketPool.setEventEmail(ticketPoolResourse.getTotalTickets());
         // Set default values for other fields
         ticketPool.setStatusMessage("Scheduled");
         ticketPool.setCreatedBy("Admin");
@@ -70,11 +67,9 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         ticketPool.setEventLocation(ticketPoolResourse.getEventLocation());
         ticketPool.setEventDate(ticketPoolResourse.getEventDate());
         ticketPool.setEventTime(ticketPoolResourse.getEventTime());
-        ticketPool.setEventDuration(ticketPoolResourse.getEventDuration());
         ticketPool.setEventCategory(ticketPoolResourse.getEventCategory());
-        ticketPool.setEventOrganizer(ticketPoolResourse.getEventOrganizer());
         ticketPool.setEventContact(ticketPoolResourse.getEventContact());
-        ticketPool.setEventEmail(ticketPoolResourse.getEventEmail());
+        ticketPool.setEventEmail(ticketPoolResourse.getTotalTickets());
 
         // Set default values for other fields
         ticketPool.setStatusMessage("Scheduled");

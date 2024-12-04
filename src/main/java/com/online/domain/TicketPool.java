@@ -25,8 +25,9 @@ public class TicketPool {
     private String eventOrganizer;
     private String eventContact;
     private String eventEmail;
-
     private int totalTickets;
+
+    private int availableTickets;
     private int ticketReleaseRate;
     private int customerRetrievalRate;
     private int maxTicketCapacity;

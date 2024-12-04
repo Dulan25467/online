@@ -15,5 +15,4 @@ public class    StakeholderResourse {
     private String phone;
     private int id;
     private String stakeholderType;
-    // Add other fields if necessary
 }

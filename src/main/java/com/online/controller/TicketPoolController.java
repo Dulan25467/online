@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @CrossOrigin
@@ -84,7 +83,7 @@ public class TicketPoolController {
 
     @DeleteMapping("/deleteEvent/{id}")
     public ResponseEntity<ApiResponse> deleteEvent(@PathVariable Long id) {
-        // Call the service layer to delete the event by ID
+
         boolean isDeleted = ticketPoolService.deleteEvent(id);
 
         if (isDeleted) {
@@ -94,7 +93,5 @@ public class TicketPoolController {
                     .body(new ApiResponse("Event not found", false, null));
         }
     }
-
-
 
 }

@@ -18,7 +18,10 @@ public class CustomerController {
     @Autowired
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
+        this.modelMapper = modelMapper;
     }
+
+
 
     @GetMapping("/getCustomers")
     public List<CustomerResourse> getCustomers() {
