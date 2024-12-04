@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class    StakeholderResourse {
+    private int id;
     private String username;
     private String password;
     private String email;
     private String address;
     private String phone;
-    private int id;
-    private String stakeholderType;
+    private String stakeholderType; //Vender or customer
 }

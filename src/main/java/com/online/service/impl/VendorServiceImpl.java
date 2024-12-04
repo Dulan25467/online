@@ -28,33 +28,5 @@ public class VendorServiceImpl implements VendorService {
         this.modelMapper = modelMapper;
     }
 
-    @Override
-    public List<VenderResourse> getAllVenders() {
-        List<VendorDetail> vendorList = vendorDao.findAll();
-        return modelMapper.map(vendorList, new TypeToken<List<VenderResourse>>() {}.getType());
-    }
 
-    @Override
-    public VenderResourse addVender(VenderResourse venderResourse) {
-        VendorDetail savedVendor = vendorDao.save(modelMapper.map(venderResourse, VendorDetail.class));
-        return modelMapper.map(savedVendor, VenderResourse.class);
-    }
-
-    @Override
-    public VenderResourse updateVender(VenderResourse venderResourse) {
-        VendorDetail updatedVendor = vendorDao.save(modelMapper.map(venderResourse, VendorDetail.class));
-        return modelMapper.map(updatedVendor, VenderResourse.class);
-    }
-
-    @Override
-    public void deleteVender(int id) {
-        vendorDao.deleteById(id);
-    }
-
-    @Override
-    public VenderResourse getVender(int id) {
-        Optional<VendorDetail> vendorDetail = vendorDao.findById(id);
-        return vendorDetail.map(vendor -> modelMapper.map(vendor, VenderResourse.class))
-                .orElseThrow(() -> new RuntimeException("Vendor not found"));
-    }
 }

@@ -1,16 +1,12 @@
 package com.online.service.impl;
 
 import com.online.domain.TicketPool;
-import com.online.exeption.ApiResponse;
 import com.online.repository.TicketPoolDao;
 import com.online.resource.TicketPoolResourse;
 import com.online.service.TicketPoolService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
 import java.util.List;

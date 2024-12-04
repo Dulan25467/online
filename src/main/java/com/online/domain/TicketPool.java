@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -39,5 +41,25 @@ public class TicketPool {
     private String updatedDate;
     private String deletedBy;
     private String deletedDate;
+
+    @ManyToOne
+    @JoinColumn(name = "organizer_id") // Foreign key
+    private StakeholderDetails organizer;
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_vendors",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "vendor_id")
+    )
+    private List<VendorDetail> vendors;
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_customers",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "customer_id")
+    )
+    private List<CustomerDetails> customers;
 
 }

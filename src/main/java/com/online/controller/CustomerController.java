@@ -23,25 +23,5 @@ public class CustomerController {
 
 
 
-    @GetMapping("/getCustomers")
-    public List<CustomerResourse> getCustomers() {
-        return customerService.getAllCustomers();
-    }
-   @GetMapping("/getCustomer/{id}")
-    public CustomerResourse getCustomer(@PathVariable int id){
-        return customerService.getCustomer(id);
-    }
-    @PostMapping("/addCustomer")
-    public CustomerResourse addCustomer(@RequestBody CustomerResourse customerResourse){
-        return customerService.addCustomer(customerResourse);
-    }
-    @PutMapping("/updateCustomer")
-    public CustomerResourse updateCustomer(@RequestBody CustomerResourse customerResourse){
-        return customerService.updateCustomer(customerResourse);
-    }
-    @DeleteMapping("/deleteCustomer/{id}")
-    public void deleteCustomer(@PathVariable int id){
-        customerService.deleteCustomer(id);
-    }
 
 }

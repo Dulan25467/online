@@ -27,32 +27,4 @@ public class CustomerServiceImpl implements CustomerService {
         this.customerDao = customerDao;
         this.modelMapper = new ModelMapper();
     }
-
-    @Override
-    public List<CustomerResourse> getAllCustomers() {
-        List<CustomerDetails> customerList = customerDao.findAll();
-        return modelMapper.map(customerList, new TypeToken<List<CustomerResourse>>(){}.getType());
-    }
-
-    @Override
-    public CustomerResourse getCustomer(int id) {
-        return modelMapper.map(customerDao.findById(id), CustomerResourse.class);
-    }
-
-    @Override
-    public CustomerResourse addCustomer(CustomerResourse customerResourse) {
-        customerDao.save(modelMapper.map(customerResourse, CustomerDetails.class));
-        return customerResourse;
-    }
-
-    @Override
-    public CustomerResourse updateCustomer(CustomerResourse customerResourse) {
-        customerDao.save(modelMapper.map(customerResourse, CustomerDetails.class));
-        return customerResourse;
-    }
-
-    @Override
-    public void deleteCustomer(int id) {
-        customerDao.deleteById(id);
-    }
 }

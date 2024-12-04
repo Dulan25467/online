@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -32,6 +33,11 @@ public class StakeholderDetails {
     private LocalDateTime updatedDate;
     private String deletedBy;
     private LocalDateTime deletedDate;
+
+
+    @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL)
+    private List<TicketPool> events; // A stakeholder can manage multiple events
+
 
     @PrePersist
     protected void onCreate() {

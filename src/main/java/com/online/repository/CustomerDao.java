@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CustomerDao extends JpaRepository<CustomerDetails,Integer> {
+public interface CustomerDao extends JpaRepository<CustomerDetails,Long> {
     @Override
     List<CustomerDetails> findAll();
 }

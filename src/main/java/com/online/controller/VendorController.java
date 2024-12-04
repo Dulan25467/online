@@ -16,24 +16,4 @@ public class VendorController {
     private VendorService vendorService;
 
 
-    @PostMapping("/addVender")
-    public VenderResourse addVender(@RequestBody VenderResourse venderResourse){
-        return vendorService.addVender(venderResourse);
-    }
-
-    @PutMapping("/updateVender")
-    public VenderResourse updateVender(@RequestBody VenderResourse venderResourse){
-        return vendorService.updateVender(venderResourse);
-    }
-
-    @DeleteMapping("/deleteVender/{id}")
-    public void deleteVender(@PathVariable int id){
-        vendorService.deleteVender(id);
-    }
-
-    @GetMapping("/getVender/{id}")
-    public VenderResourse getVender(@PathVariable int id){
-        return vendorService.getVender(id);
-    }
-
 }

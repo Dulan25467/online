@@ -1,7 +1,11 @@
 package com.online.service.impl;
 
+import com.online.domain.CustomerDetails;
 import com.online.domain.StakeholderDetails;
+import com.online.domain.VendorDetail;
+import com.online.repository.CustomerDao;
 import com.online.repository.StakeholderDao;
+import com.online.repository.VendorDao;
 import com.online.resource.StakeholderResourse;
 import com.online.service.StakeholderService;
 import jakarta.transaction.Transactional;
@@ -17,11 +21,15 @@ import java.time.LocalDateTime;
 @Service
 public class StakeholderServiceImpl implements StakeholderService {
     private final StakeholderDao stakeholderDao;
+    private final VendorDao vendorDao;
+    private final CustomerDao customerDao;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public StakeholderServiceImpl(StakeholderDao stakeholderDao, ModelMapper modelMapper) {
+    public StakeholderServiceImpl(StakeholderDao stakeholderDao,VendorDao vendorDao,CustomerDao customerDao, ModelMapper modelMapper) {
         this.stakeholderDao = stakeholderDao;
+        this.vendorDao = vendorDao;
+        this.customerDao = customerDao;
         this.modelMapper = modelMapper;
     }
 
@@ -45,15 +53,39 @@ public class StakeholderServiceImpl implements StakeholderService {
         StakeholderDetails stakeholder = modelMapper.map(stakeholderResourse, StakeholderDetails.class);
 
         // Populate additional fields
-        stakeholder.setCreatedDate(LocalDateTime.parse(LocalDateTime.now().toString()));
+        stakeholder.setCreatedDate(LocalDateTime.now());
         stakeholder.setCreatedBy("system"); // Replace "system" with actual logged-in user if applicable
 
-        // Save the entity
-        stakeholderDao.save(stakeholder);
+        // Save the StakeholderDetails entity
+        StakeholderDetails savedStakeholder = stakeholderDao.save(stakeholder);
+
+        // Add data to VendorDetail or CustomerDetails based on stakeholderType
+        if ("Vendor".equalsIgnoreCase(stakeholderResourse.getStakeholderType())) {
+            VendorDetail vendor = new VendorDetail();
+            vendor.setId(savedStakeholder.getId());
+            vendor.setName(savedStakeholder.getUsername());
+            vendor.setEmail(savedStakeholder.getEmail());
+            vendor.setAddress(savedStakeholder.getAddress());
+            vendor.setPhone(savedStakeholder.getPhone());
+            vendor.setCreatedBy(savedStakeholder.getCreatedBy());
+            vendor.setCreatedDate(savedStakeholder.getCreatedDate().toString());
+            vendorDao.save(vendor); // Save to the VendorDetail table
+        } else if ("Customer".equalsIgnoreCase(stakeholderResourse.getStakeholderType())) {
+            CustomerDetails customer = new CustomerDetails();
+            customer.setId(savedStakeholder.getId());
+            customer.setName(savedStakeholder.getUsername());
+            customer.setEmail(savedStakeholder.getEmail());
+            customer.setAddress(savedStakeholder.getAddress());
+            customer.setPhone(savedStakeholder.getPhone());
+            customer.setCreatedBy(savedStakeholder.getCreatedBy());
+            customer.setCreatedDate(savedStakeholder.getCreatedDate().toString());
+            customerDao.save(customer); // Save to the CustomerDetails table
+        }
 
         // Map back to StakeholderResourse and return
-        return modelMapper.map(stakeholder, StakeholderResourse.class);
+        return modelMapper.map(savedStakeholder, StakeholderResourse.class);
     }
+
 
 
     @Override
