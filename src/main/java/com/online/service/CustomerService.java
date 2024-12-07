@@ -7,5 +7,6 @@ import java.util.List;
 
 @Service
 public interface CustomerService {
+    boolean bookTickets(Long eventId, String username, int numberOfTickets);
 
 }

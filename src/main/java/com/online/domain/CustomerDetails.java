@@ -41,4 +41,5 @@ public class CustomerDetails {
     @ManyToMany(mappedBy = "customers")
     private List<TicketPool> events;
 
+
 }
