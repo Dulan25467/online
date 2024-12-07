@@ -24,10 +24,13 @@ public class TicketPoolController {
     }
 
     @PostMapping("/addEvent")
-    public ResponseEntity<ApiResponse> addEvent(@RequestBody TicketPoolResourse ticketPoolResourse) {
+    public ResponseEntity<ApiResponse> addEvent(
+            @RequestBody TicketPoolResourse ticketPoolResourse,
+            @RequestParam Long vendorId,
+            @RequestParam String username) { // Accept username
         CommonExeption exception = new CommonExeption();
 
-        // Validate the ticket pool details
+        // Validate ticket pool details
         if (ticketPoolResourse.getEventName() == null || ticketPoolResourse.getEventName().isEmpty()) {
             exception.addError("eventName", "Event name is required");
         }
@@ -40,10 +43,13 @@ public class TicketPoolController {
         }
 
         // Save the ticket pool details
-        TicketPoolResourse savedTicketPool = ticketPoolService.addEvent(ticketPoolResourse);
+        TicketPoolResourse savedTicketPool = ticketPoolService.addEvent(ticketPoolResourse, vendorId, username);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse("Event added successfully", true, savedTicketPool));
     }
+
+
+
 
 
 
@@ -59,27 +65,46 @@ public class TicketPoolController {
         }
     }
 
-    @PutMapping("/updateEvent")
-    public ResponseEntity<ApiResponse> updateEvent(@RequestBody TicketPoolResourse ticketPoolResourse) {
-        CommonExeption exception = new CommonExeption();
+    @PutMapping("/updateEvent/{vendorId}")
+    public ResponseEntity<ApiResponse> updateEvent(
+            @RequestBody TicketPoolResourse ticketPoolResourse,
+            @RequestParam Long vendorId,
+            @RequestParam String username) {
 
-        // Validate the ticket pool details
-        if (ticketPoolResourse.getEventName() == null || ticketPoolResourse.getEventName().isEmpty()) {
+            CommonExeption exception = new CommonExeption();
+
+            // Validate the ticket pool details
+            if (ticketPoolResourse.getEventName() == null || ticketPoolResourse.getEventName().isEmpty()) {
             exception.addError("eventName", "Event name is required");
         }
         if (ticketPoolResourse.getEventLocation() == null || ticketPoolResourse.getEventLocation().isEmpty()) {
             exception.addError("eventLocation", "Event location is required");
+        }
+        if (ticketPoolResourse.getEventDate() == null || ticketPoolResourse.getEventDate().isEmpty()) {
+            exception.addError("eventDate", "Event date is required");
+        }
+        if (ticketPoolResourse.getEventTime() == null || ticketPoolResourse.getEventTime().isEmpty()) {
+            exception.addError("eventTime", "Event time is required");
         }
         if (!exception.getErrors().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse("Invalid ticket pool details", false, exception.getErrors()));
         }
 
-        // Save the ticket pool details
-        TicketPoolResourse savedTicketPool = ticketPoolService.updateEvent(ticketPoolResourse);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse("Event updated successfully", true, savedTicketPool));
+        // Call the service method to update the event
+        try {
+            TicketPoolResourse savedTicketPool = ticketPoolService.updateEvent(ticketPoolResourse, vendorId, username);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ApiResponse("Event updated successfully", true, savedTicketPool));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse(ex.getMessage(), false, null));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("An unexpected error occurred while updating the event", false, null));
+        }
     }
+
 
     @DeleteMapping("/deleteEvent/{id}")
     public ResponseEntity<ApiResponse> deleteEvent(@PathVariable Long id) {

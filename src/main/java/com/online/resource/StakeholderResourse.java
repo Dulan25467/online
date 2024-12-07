@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class    StakeholderResourse {
+public class  StakeholderResourse {
     private int id;
     private String username;
     private String password;
@@ -15,4 +15,6 @@ public class    StakeholderResourse {
     private String address;
     private String phone;
     private String stakeholderType; //Vender or customer
+    private int vendorId; // Optional, applicable for Vendor
+    private int customerId;
 }

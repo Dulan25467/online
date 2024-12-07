@@ -37,8 +37,7 @@ public class StakeholderServiceImpl implements StakeholderService {
     public StakeholderResourse login(String username, String password) {
         StakeholderDetails stakeholder = stakeholderDao.findByUsername(username);
         if (stakeholder != null) {
-            // Password check can be enhanced with encryption
-            if (password.equals(stakeholder.getDeletedBy())) { // Assuming password is stored as `deletedBy` temporarily
+            if (password.equals(stakeholder.getPassword())) {
                 return modelMapper.map(stakeholder, StakeholderResourse.class);
             } else {
                 throw new RuntimeException("Invalid password.");
@@ -47,6 +46,7 @@ public class StakeholderServiceImpl implements StakeholderService {
         throw new RuntimeException("User not found.");
     }
 
+
     @Override
     public StakeholderResourse register(StakeholderResourse stakeholderResourse) {
         // Map StakeholderResourse to StakeholderDetails entity
@@ -54,7 +54,7 @@ public class StakeholderServiceImpl implements StakeholderService {
 
         // Populate additional fields
         stakeholder.setCreatedDate(LocalDateTime.now());
-        stakeholder.setCreatedBy("system"); // Replace "system" with actual logged-in user if applicable
+        stakeholder.setCreatedBy("system");
 
         // Save the StakeholderDetails entity
         StakeholderDetails savedStakeholder = stakeholderDao.save(stakeholder);
@@ -69,7 +69,9 @@ public class StakeholderServiceImpl implements StakeholderService {
             vendor.setPhone(savedStakeholder.getPhone());
             vendor.setCreatedBy(savedStakeholder.getCreatedBy());
             vendor.setCreatedDate(savedStakeholder.getCreatedDate().toString());
-            vendorDao.save(vendor); // Save to the VendorDetail table
+            VendorDetail savedVendor = vendorDao.save(vendor); // Save to VendorDetail
+
+            stakeholderResourse.setVendorId((int) savedVendor.getId()); // Return Vendor ID
         } else if ("Customer".equalsIgnoreCase(stakeholderResourse.getStakeholderType())) {
             CustomerDetails customer = new CustomerDetails();
             customer.setId(savedStakeholder.getId());
@@ -79,12 +81,54 @@ public class StakeholderServiceImpl implements StakeholderService {
             customer.setPhone(savedStakeholder.getPhone());
             customer.setCreatedBy(savedStakeholder.getCreatedBy());
             customer.setCreatedDate(savedStakeholder.getCreatedDate().toString());
-            customerDao.save(customer); // Save to the CustomerDetails table
+            CustomerDetails savedCustomer = customerDao.save(customer); // Save to CustomerDetails
+
+            stakeholderResourse.setCustomerId((int) savedCustomer.getId()); // Return Customer ID
         }
 
         // Map back to StakeholderResourse and return
         return modelMapper.map(savedStakeholder, StakeholderResourse.class);
     }
+
+
+//    @Override
+//    public StakeholderResourse register(StakeholderResourse stakeholderResourse) {
+//        // Map StakeholderResourse to StakeholderDetails entity
+//        StakeholderDetails stakeholder = modelMapper.map(stakeholderResourse, StakeholderDetails.class);
+//
+//        // Populate additional fields
+//        stakeholder.setCreatedDate(LocalDateTime.now());
+//        stakeholder.setCreatedBy("system"); // Replace "system" with actual logged-in user if applicable
+//
+//        // Save the StakeholderDetails entity
+//        StakeholderDetails savedStakeholder = stakeholderDao.save(stakeholder);
+//
+//        // Add data to VendorDetail or CustomerDetails based on stakeholderType
+//        if ("Vendor".equalsIgnoreCase(stakeholderResourse.getStakeholderType())) {
+//            VendorDetail vendor = new VendorDetail();
+//            vendor.setId(savedStakeholder.getId());
+//            vendor.setName(savedStakeholder.getUsername());
+//            vendor.setEmail(savedStakeholder.getEmail());
+//            vendor.setAddress(savedStakeholder.getAddress());
+//            vendor.setPhone(savedStakeholder.getPhone());
+//            vendor.setCreatedBy(savedStakeholder.getCreatedBy());
+//            vendor.setCreatedDate(savedStakeholder.getCreatedDate().toString());
+//            vendorDao.save(vendor); // Save to the VendorDetail table
+//        } else if ("Customer".equalsIgnoreCase(stakeholderResourse.getStakeholderType())) {
+//            CustomerDetails customer = new CustomerDetails();
+//            customer.setId(savedStakeholder.getId());
+//            customer.setName(savedStakeholder.getUsername());
+//            customer.setEmail(savedStakeholder.getEmail());
+//            customer.setAddress(savedStakeholder.getAddress());
+//            customer.setPhone(savedStakeholder.getPhone());
+//            customer.setCreatedBy(savedStakeholder.getCreatedBy());
+//            customer.setCreatedDate(savedStakeholder.getCreatedDate().toString());
+//            customerDao.save(customer); // Save to the CustomerDetails table
+//        }
+//
+//        // Map back to StakeholderResourse and return
+//        return modelMapper.map(savedStakeholder, StakeholderResourse.class);
+//    }
 
 
 
