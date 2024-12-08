@@ -159,6 +159,15 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         TicketPool event = ticketPoolDao.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event with ID " + eventId + " not found"));
 
+        // Check for already booked tickets
+        List<Integer> alreadyBookedTickets = ticketNumbers.stream()
+                .filter(event.getBookedTickets()::contains)
+                .collect(Collectors.toList());
+
+        if (!alreadyBookedTickets.isEmpty()) {
+            throw new IllegalArgumentException("The following tickets are already booked: " + alreadyBookedTickets);
+        }
+
         // Validate the ticket numbers
         if (ticketNumbers.size() > event.getAvailableTickets()) {
             throw new IllegalArgumentException("Not enough tickets available for booking");
@@ -166,6 +175,7 @@ public class TicketPoolServiceImpl implements TicketPoolService {
 
         // Update the event details
         event.setAvailableTickets(event.getAvailableTickets() - ticketNumbers.size());
+        event.getBookedTickets().addAll(ticketNumbers);
         event.setUpdatedBy("Customer " + customerId);
         event.setUpdatedDate(LocalDateTime.now().toString());
         ticketPoolDao.save(event);
@@ -179,4 +189,12 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         // Return the updated event details
         return modelMapper.map(event, TicketPoolResourse.class);
     }
+
+    @Override
+    public List<Integer> getBookedTickets(Long eventId) {
+        TicketPool event = ticketPoolDao.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event with ID " + eventId + " not found"));
+        return event.getBookedTickets();
+    }
+
 }

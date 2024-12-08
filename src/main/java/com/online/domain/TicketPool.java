@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,6 +42,11 @@ public class TicketPool {
     private String updatedDate;
     private String deletedBy;
     private String deletedDate;
+
+    @ElementCollection
+    private List<Integer> bookedTickets = new ArrayList<>();
+
+
 
     @ManyToOne
     @JoinColumn(name = "organizer_id") // Foreign key

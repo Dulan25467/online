@@ -157,5 +157,15 @@ public class TicketPoolController {
         }
     }
 
+    @GetMapping("/bookedTickets/{eventId}")
+    public ResponseEntity<ApiResponse> getBookedTickets(@PathVariable Long eventId) {
+        try {
+            List<Integer> bookedTickets = ticketPoolService.getBookedTickets(eventId);
+            return ResponseEntity.ok(new ApiResponse("Booked tickets fetched successfully", true, bookedTickets));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("Failed to fetch booked tickets", false, null));
+        }
+    }
 
 }

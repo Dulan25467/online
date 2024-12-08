@@ -12,5 +12,6 @@ public interface TicketPoolService {
         boolean deleteEvent(Long id);
         TicketPoolResourse viewEvent(Long id);
         TicketPoolResourse bookTickets(Long eventId, Long customerId, List<Integer> ticketNumbers);
+        List<Integer> getBookedTickets(Long eventId);
 
 }
