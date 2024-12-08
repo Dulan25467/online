@@ -152,7 +152,7 @@ public class TicketPoolServiceImpl implements TicketPoolService {
     }
 
     @Override
-    public TicketPoolResourse bookTickets(Long eventId, Long customerId, String ticketNumbers) {
+    public TicketPoolResourse bookTickets(Long eventId, Long customerId, List<Integer> ticketNumbers) {
         // Fetch the customer and event
         CustomerDetails customer = customerDao.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("Customer with ID " + customerId + " not found"));
@@ -160,19 +160,18 @@ public class TicketPoolServiceImpl implements TicketPoolService {
                 .orElseThrow(() -> new IllegalArgumentException("Event with ID " + eventId + " not found"));
 
         // Validate the ticket numbers
-        int numberOfTickets = Integer.parseInt(ticketNumbers);
-        if (numberOfTickets > event.getAvailableTickets()) {
+        if (ticketNumbers.size() > event.getAvailableTickets()) {
             throw new IllegalArgumentException("Not enough tickets available for booking");
         }
 
         // Update the event details
-        event.setAvailableTickets(event.getAvailableTickets() - numberOfTickets);
+        event.setAvailableTickets(event.getAvailableTickets() - ticketNumbers.size());
         event.setUpdatedBy("Customer " + customerId);
         event.setUpdatedDate(LocalDateTime.now().toString());
         ticketPoolDao.save(event);
 
         // Update the customer details
-        customer.setBookedTickets(customer.getBookedTickets() + numberOfTickets);
+        customer.setBookedTickets(customer.getBookedTickets() + ticketNumbers.size());
         customer.setUpdatedBy("Event " + eventId);
         customer.setUpdatedDate(LocalDateTime.now().toString());
         customerDao.save(customer);

@@ -140,12 +140,12 @@ public class TicketPoolController {
     public ResponseEntity<ApiResponse> bookTickets(
             @PathVariable Long eventId,
             @PathVariable Long customerId,
-            @RequestBody Map<String, Integer> request) {
+            @RequestBody Map<String, List<Integer>> request) {
 
-        int numberOfTickets = request.get("numberOfTickets");
+        List<Integer> ticketNumbers = request.get("ticketNumbers");
 
         try {
-            ticketPoolService.bookTickets(eventId, customerId, String.valueOf(numberOfTickets));
+            ticketPoolService.bookTickets(eventId, customerId, ticketNumbers);
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ApiResponse("Tickets booked successfully", true, null));
         } catch (IllegalArgumentException ex) {
