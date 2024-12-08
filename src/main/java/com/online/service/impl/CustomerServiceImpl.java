@@ -28,43 +28,6 @@ public class CustomerServiceImpl implements CustomerService {
         this.ticketPoolDao = ticketPoolDao;
         this.modelMapper = new ModelMapper();
     }
-    @Override
-    public boolean bookTicket(Long customerId, Long eventId, String ticketNumbers) {
-        // Fetch customer
-        Optional<CustomerDetails> optionalCustomer = customerDao.findById(customerId);
-        if (!optionalCustomer.isPresent()) {
-            throw new IllegalArgumentException("Customer not found");
-        }
-        CustomerDetails customer = optionalCustomer.get();
 
-        // Fetch event
-        Optional<TicketPool> optionalEvent = ticketPoolDao.findById(eventId);
-        if (!optionalEvent.isPresent()) {
-            throw new IllegalArgumentException("Event not found");
-        }
-        TicketPool event = optionalEvent.get();
 
-        // Fetch current booked tickets for the customer
-        String bookedTickets = customer.getBookedtickets();
-        if (bookedTickets == null) {
-            bookedTickets = "";
-        }
-
-        // Check if the requested tickets are available and not already booked by the customer
-        String[] requestedTickets = ticketNumbers.split(",");
-        for (String ticket : requestedTickets) {
-            if (bookedTickets.contains(ticket)) {
-                throw new IllegalArgumentException("Ticket " + ticket + " is already booked.");
-            }
-        }
-
-        // Add the booked tickets to the customer's record
-        bookedTickets += (bookedTickets.isEmpty() ? "" : ",") + ticketNumbers;
-        customer.setBookedtickets(bookedTickets);
-
-        // Update the customer's ticket information
-        customerDao.save(customer);
-
-        return true;
-    }
 }

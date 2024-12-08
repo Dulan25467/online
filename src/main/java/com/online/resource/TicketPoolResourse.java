@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketPoolResourse {
-
+    private Long id;
     private String eventName;
     private String eventDescription;
     private String eventLocation;

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @RestController
@@ -118,5 +119,43 @@ public class TicketPoolController {
                     .body(new ApiResponse("Event not found", false, null));
         }
     }
+
+    @GetMapping("/viewEvent/{id}")
+    public ResponseEntity<ApiResponse> viewEvent(@PathVariable Long id) {
+        if (id == null || id <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse("Invalid event ID", false, null));
+        }
+
+        TicketPoolResourse event = ticketPoolService.viewEvent(id);
+        if (event != null) {
+            return ResponseEntity.ok(new ApiResponse("Event fetched successfully", true, event));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse("Event not found", false, null));
+        }
+    }
+
+    @PostMapping("/bookTickets/{eventId}/{customerId}")
+    public ResponseEntity<ApiResponse> bookTickets(
+            @PathVariable Long eventId,
+            @PathVariable Long customerId,
+            @RequestBody Map<String, Integer> request) {
+
+        int numberOfTickets = request.get("numberOfTickets");
+
+        try {
+            ticketPoolService.bookTickets(eventId, customerId, String.valueOf(numberOfTickets));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ApiResponse("Tickets booked successfully", true, null));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse(ex.getMessage(), false, null));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("An unexpected error occurred while booking tickets", false, null));
+        }
+    }
+
 
 }

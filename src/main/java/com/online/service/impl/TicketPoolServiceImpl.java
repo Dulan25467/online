@@ -1,5 +1,6 @@
 package com.online.service.impl;
 
+import com.online.domain.CustomerDetails;
 import com.online.domain.TicketPool;
 import com.online.domain.VendorDetail;
 import com.online.repository.CustomerDao;
@@ -144,4 +145,39 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         return false;
     }
 
+    @Override
+    public TicketPoolResourse viewEvent(Long id) {
+        Optional<TicketPool> ticketPool = ticketPoolDao.findById(id);
+        return ticketPool.map(value -> modelMapper.map(value, TicketPoolResourse.class)).orElse(null);
+    }
+
+    @Override
+    public TicketPoolResourse bookTickets(Long eventId, Long customerId, String ticketNumbers) {
+        // Fetch the customer and event
+        CustomerDetails customer = customerDao.findById(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("Customer with ID " + customerId + " not found"));
+        TicketPool event = ticketPoolDao.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event with ID " + eventId + " not found"));
+
+        // Validate the ticket numbers
+        int numberOfTickets = Integer.parseInt(ticketNumbers);
+        if (numberOfTickets > event.getAvailableTickets()) {
+            throw new IllegalArgumentException("Not enough tickets available for booking");
+        }
+
+        // Update the event details
+        event.setAvailableTickets(event.getAvailableTickets() - numberOfTickets);
+        event.setUpdatedBy("Customer " + customerId);
+        event.setUpdatedDate(LocalDateTime.now().toString());
+        ticketPoolDao.save(event);
+
+        // Update the customer details
+        customer.setBookedTickets(customer.getBookedTickets() + numberOfTickets);
+        customer.setUpdatedBy("Event " + eventId);
+        customer.setUpdatedDate(LocalDateTime.now().toString());
+        customerDao.save(customer);
+
+        // Return the updated event details
+        return modelMapper.map(event, TicketPoolResourse.class);
+    }
 }

@@ -63,7 +63,7 @@ public class StakeholderServiceImpl implements StakeholderService {
         if ("Vendor".equalsIgnoreCase(stakeholderResourse.getStakeholderType())) {
             VendorDetail vendor = new VendorDetail();
             vendor.setId(savedStakeholder.getId());
-            vendor.setName(savedStakeholder.getUsername());
+            vendor.setUsername(savedStakeholder.getUsername());
             vendor.setEmail(savedStakeholder.getEmail());
             vendor.setAddress(savedStakeholder.getAddress());
             vendor.setPhone(savedStakeholder.getPhone());
@@ -75,7 +75,7 @@ public class StakeholderServiceImpl implements StakeholderService {
         } else if ("Customer".equalsIgnoreCase(stakeholderResourse.getStakeholderType())) {
             CustomerDetails customer = new CustomerDetails();
             customer.setId(savedStakeholder.getId());
-            customer.setName(savedStakeholder.getUsername());
+            customer.setUsername(savedStakeholder.getUsername());
             customer.setEmail(savedStakeholder.getEmail());
             customer.setAddress(savedStakeholder.getAddress());
             customer.setPhone(savedStakeholder.getPhone());

@@ -19,7 +19,7 @@ import java.util.List;
 public class VendorDetail {
     @Id
     private long id;
-    private String name;
+    private String username;
     private String email;
     private String address;
     private String phone;

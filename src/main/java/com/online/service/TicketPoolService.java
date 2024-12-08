@@ -10,5 +10,7 @@ public interface TicketPoolService {
         List<TicketPoolResourse> viewEvents();
         TicketPoolResourse updateEvent(TicketPoolResourse ticketPoolResourse, Long vendorId, String username);
         boolean deleteEvent(Long id);
+        TicketPoolResourse viewEvent(Long id);
+        TicketPoolResourse bookTickets(Long customerId, Long eventId, String ticketNumbers);
 
 }
