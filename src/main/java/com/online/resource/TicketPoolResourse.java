@@ -17,5 +17,6 @@ public class TicketPoolResourse {
     private String eventCategory;
     private String eventContact;
     private String totalTickets;
-
+    private String availableTickets;
+    private float ticketPrice;
 }
