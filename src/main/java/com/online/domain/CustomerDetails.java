@@ -38,6 +38,7 @@ public class CustomerDetails {
     private String eventContact;
     private String bookedtickets;
 
+
     @ManyToMany(mappedBy = "customers")
     private List<TicketPool> events;
 

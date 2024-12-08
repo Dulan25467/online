@@ -4,18 +4,14 @@ import com.online.domain.CustomerDetails;
 import com.online.domain.TicketPool;
 import com.online.repository.CustomerDao;
 import com.online.repository.TicketPoolDao;
-import com.online.resource.CustomerResourse;
 import com.online.service.CustomerService;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+import java.util.Optional;
 
 @Data
 @Transactional
@@ -32,33 +28,43 @@ public class CustomerServiceImpl implements CustomerService {
         this.ticketPoolDao = ticketPoolDao;
         this.modelMapper = new ModelMapper();
     }
-
     @Override
-    public boolean bookTickets(Long eventId, String username, int numberOfTickets) {
-        // Fetch the event using eventId
-        TicketPool ticketPool = ticketPoolDao.findById(eventId).orElse(null);
-        if (ticketPool == null) {
-            throw new IllegalArgumentException("Event with ID " + eventId + " not found");
+    public boolean bookTicket(Long customerId, Long eventId, String ticketNumbers) {
+        // Fetch customer
+        Optional<CustomerDetails> optionalCustomer = customerDao.findById(customerId);
+        if (!optionalCustomer.isPresent()) {
+            throw new IllegalArgumentException("Customer not found");
+        }
+        CustomerDetails customer = optionalCustomer.get();
+
+        // Fetch event
+        Optional<TicketPool> optionalEvent = ticketPoolDao.findById(eventId);
+        if (!optionalEvent.isPresent()) {
+            throw new IllegalArgumentException("Event not found");
+        }
+        TicketPool event = optionalEvent.get();
+
+        // Fetch current booked tickets for the customer
+        String bookedTickets = customer.getBookedtickets();
+        if (bookedTickets == null) {
+            bookedTickets = "";
         }
 
-        // Check if enough tickets are available
-        if (ticketPool.getAvailableTickets() < numberOfTickets) {
-            return false;
+        // Check if the requested tickets are available and not already booked by the customer
+        String[] requestedTickets = ticketNumbers.split(",");
+        for (String ticket : requestedTickets) {
+            if (bookedTickets.contains(ticket)) {
+                throw new IllegalArgumentException("Ticket " + ticket + " is already booked.");
+            }
         }
 
-        // Update available tickets
-        ticketPool.setAvailableTickets(ticketPool.getAvailableTickets() - numberOfTickets);
-        ticketPoolDao.save(ticketPool);
+        // Add the booked tickets to the customer's record
+        bookedTickets += (bookedTickets.isEmpty() ? "" : ",") + ticketNumbers;
+        customer.setBookedtickets(bookedTickets);
 
-        // Create a new customer
-        CustomerDetails customer = customerDao.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-
-        customer.setBookedtickets(customer.getBookedtickets() + ", " + eventId.getClass() + " (" + numberOfTickets + ")");
+        // Update the customer's ticket information
         customerDao.save(customer);
 
         return true;
     }
-
-
 }

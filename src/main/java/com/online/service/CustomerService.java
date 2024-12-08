@@ -1,12 +1,12 @@
 package com.online.service;
 
-import com.online.resource.CustomerResourse;
+import com.online.domain.CustomerDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface CustomerService {
-    boolean bookTickets(Long eventId, String username, int numberOfTickets);
+    boolean bookTicket(Long customerId, Long eventId, String ticketNumbers);
 
 }

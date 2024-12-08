@@ -144,7 +144,4 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         return false;
     }
 
-
-
-
 }

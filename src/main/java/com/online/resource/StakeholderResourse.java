@@ -14,7 +14,7 @@ public class  StakeholderResourse {
     private String email;
     private String address;
     private String phone;
-    private String stakeholderType; //Vender or customer
+    private String stakeholderType; //Vendor or customer
     private int vendorId; // Optional, applicable for Vendor
     private int customerId;
 }
