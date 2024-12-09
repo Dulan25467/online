@@ -82,6 +82,53 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         return modelMapper.map(savedEvent, TicketPoolResourse.class);
     }
 
+    @Override
+    public TicketPoolResourse createEvent(TicketPoolResourse ticketPoolResourse) {
+        TicketPool ticketPool = new TicketPool();
+        ticketPool.setEventName(ticketPoolResourse.getEventName());
+        ticketPool.setEventDescription(ticketPoolResourse.getEventDescription());
+        ticketPool.setEventLocation(ticketPoolResourse.getEventLocation());
+        ticketPool.setEventDate(ticketPoolResourse.getEventDate());
+        ticketPool.setEventTime(ticketPoolResourse.getEventTime());
+        ticketPool.setEventCategory(ticketPoolResourse.getEventCategory());
+        ticketPool.setEventContact(ticketPoolResourse.getEventContact());
+        ticketPool.setTotalTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
+        ticketPool.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
+        ticketPool.setStatusMessage("Scheduled");
+        ticketPool.setCreatedBy("Admin"); // Include username
+        ticketPool.setCreatedDate(LocalDateTime.now().toString());
+
+        // Save ticket pool details
+        TicketPool savedEvent = ticketPoolDao.save(ticketPool);
+
+        // Return the mapped response
+        return modelMapper.map(savedEvent, TicketPoolResourse.class);
+    }
+
+    @Override
+    public TicketPoolResourse modifyEvent(TicketPoolResourse ticketPoolResourse, Long eventId) {
+        // Fetch the existing event
+        TicketPool ticketPool = ticketPoolDao.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event with ID " + eventId + " not found"));
+
+        // Update event details
+        ticketPool.setEventName(ticketPoolResourse.getEventName());
+        ticketPool.setEventDescription(ticketPoolResourse.getEventDescription());
+        ticketPool.setEventLocation(ticketPoolResourse.getEventLocation());
+        ticketPool.setEventDate(ticketPoolResourse.getEventDate());
+        ticketPool.setEventTime(ticketPoolResourse.getEventTime());
+        ticketPool.setEventCategory(ticketPoolResourse.getEventCategory());
+        ticketPool.setEventContact(ticketPoolResourse.getEventContact());
+        ticketPool.setTotalTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
+        ticketPool.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets())); // Assuming all tickets are available after update
+        ticketPool.setUpdatedBy("Admin");
+        ticketPool.setUpdatedDate(LocalDateTime.now().toString());
+        TicketPool updatedEvent = ticketPoolDao.save(ticketPool);
+
+        // Return the updated event as a response
+        return modelMapper.map(updatedEvent, TicketPoolResourse.class);
+    }
+
 
     @Override
     public List<TicketPoolResourse> viewEvents() {

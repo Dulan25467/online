@@ -13,5 +13,7 @@ public interface TicketPoolService {
         TicketPoolResourse viewEvent(Long id);
         TicketPoolResourse bookTickets(Long eventId, Long customerId, List<Integer> ticketNumbers);
         List<Integer> getBookedTickets(Long eventId);
+        TicketPoolResourse createEvent(TicketPoolResourse ticketPoolResourse);
+        TicketPoolResourse modifyEvent(TicketPoolResourse ticketPoolResourse, Long eventId);
 
 }
