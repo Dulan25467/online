@@ -50,5 +50,4 @@ public class CommonExeption extends RuntimeException {
         exception.setPath(path);
         return exception;
     }
-
 }

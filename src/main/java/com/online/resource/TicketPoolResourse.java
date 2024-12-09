@@ -18,5 +18,6 @@ public class TicketPoolResourse {
     private String eventContact;
     private String totalTickets;
     private String availableTickets;
-    private float ticketPrice;
+    private double ticketPrice;
+    private int maxTicketCapacity;
 }

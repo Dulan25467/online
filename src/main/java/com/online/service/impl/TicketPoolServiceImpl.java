@@ -85,6 +85,8 @@ public class TicketPoolServiceImpl implements TicketPoolService {
     @Override
     public TicketPoolResourse createEvent(TicketPoolResourse ticketPoolResourse) {
         TicketPool ticketPool = new TicketPool();
+
+        // Validate and set event details
         ticketPool.setEventName(ticketPoolResourse.getEventName());
         ticketPool.setEventDescription(ticketPoolResourse.getEventDescription());
         ticketPool.setEventLocation(ticketPoolResourse.getEventLocation());
@@ -92,8 +94,31 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         ticketPool.setEventTime(ticketPoolResourse.getEventTime());
         ticketPool.setEventCategory(ticketPoolResourse.getEventCategory());
         ticketPool.setEventContact(ticketPoolResourse.getEventContact());
-        ticketPool.setTotalTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
-        ticketPool.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
+
+        // Validate and parse maxTicketCapacity
+        try {
+            ticketPool.setMaxTicketCapacity(Integer.parseInt(String.valueOf(ticketPoolResourse.getMaxTicketCapacity())));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid max ticket capacity format", e);
+        }
+
+        // Validate and parse totalTickets
+        if (ticketPoolResourse.getTotalTickets() == null) {
+            throw new IllegalArgumentException("Total tickets cannot be null");
+        }
+        try {
+            ticketPool.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid total tickets format", e);
+        }
+
+        // Validate and parse ticketPrice
+        try {
+            ticketPool.setTicketPrice(Double.parseDouble(String.valueOf(ticketPoolResourse.getTicketPrice())));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid ticket price format", e);
+        }
+
         ticketPool.setStatusMessage("Scheduled");
         ticketPool.setCreatedBy("Admin"); // Include username
         ticketPool.setCreatedDate(LocalDateTime.now().toString());
@@ -119,8 +144,8 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         ticketPool.setEventTime(ticketPoolResourse.getEventTime());
         ticketPool.setEventCategory(ticketPoolResourse.getEventCategory());
         ticketPool.setEventContact(ticketPoolResourse.getEventContact());
-        ticketPool.setTotalTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
-        ticketPool.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets())); // Assuming all tickets are available after update
+        ticketPool.setMaxTicketCapacity(Integer.parseInt(String.valueOf(ticketPoolResourse.getMaxTicketCapacity())));
+        ticketPool.setTicketPrice(Double.parseDouble(String.valueOf(ticketPoolResourse.getTicketPrice())));
         ticketPool.setUpdatedBy("Admin");
         ticketPool.setUpdatedDate(LocalDateTime.now().toString());
         TicketPool updatedEvent = ticketPoolDao.save(ticketPool);

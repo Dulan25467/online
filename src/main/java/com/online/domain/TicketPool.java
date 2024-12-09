@@ -29,7 +29,7 @@ public class TicketPool {
     private String eventContact;
     private String eventEmail;
     private int totalTickets;
-    private float ticketPrice;
+    private double ticketPrice;
 
     private int availableTickets;
     private int ticketReleaseRate;

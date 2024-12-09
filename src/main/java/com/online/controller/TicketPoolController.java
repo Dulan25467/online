@@ -78,10 +78,10 @@ public class TicketPoolController {
             @RequestBody TicketPoolResourse ticketPoolResourse,
             @PathVariable Long id) {
 
-            CommonExeption exception = new CommonExeption();
+        CommonExeption exception = new CommonExeption();
 
-            // Validate the ticket pool details
-            if (ticketPoolResourse.getEventName() == null || ticketPoolResourse.getEventName().isEmpty()) {
+        // Validate the ticket pool details
+        if (ticketPoolResourse.getEventName() == null || ticketPoolResourse.getEventName().isEmpty()) {
             exception.addError("eventName", "Event name is required");
         }
         if (ticketPoolResourse.getEventLocation() == null || ticketPoolResourse.getEventLocation().isEmpty()) {
