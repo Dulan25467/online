@@ -6,9 +6,7 @@ import java.util.List;
 
 @Service
 public interface TicketPoolService {
-        TicketPoolResourse addEvent(TicketPoolResourse ticketPoolResourse, Long vendorId, String username);
         List<TicketPoolResourse> viewEvents();
-        TicketPoolResourse updateEvent(TicketPoolResourse ticketPoolResourse, Long vendorId, String username);
         boolean deleteEvent(Long id);
         TicketPoolResourse viewEvent(Long id);
         TicketPoolResourse bookTickets(Long eventId, Long customerId, List<Integer> ticketNumbers);
@@ -16,4 +14,6 @@ public interface TicketPoolService {
         TicketPoolResourse createEvent(TicketPoolResourse ticketPoolResourse);
         TicketPoolResourse modifyEvent(TicketPoolResourse ticketPoolResourse, Long eventId);
 
+        TicketPoolResourse addVendorTickets(Long eventId, Long vendorId, int ticketsToAdd);
+        List<TicketPoolResourse> getVendorTicketHistory(Long vendorId);
 }

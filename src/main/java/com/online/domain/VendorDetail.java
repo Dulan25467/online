@@ -39,8 +39,16 @@ public class VendorDetail {
     private String eventContact;
     private int totalTickets;
     private int availableTickets;
+    private int maxTicketCapacity;
 
     @ManyToMany(mappedBy = "vendors")
     private List<TicketPool> events;
 
+    public void setEventName(String eventName) {
+        this.eventname = eventName;
+    }
+
+    public String getEventName() {
+        return eventname;
+    }
 }

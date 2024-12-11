@@ -20,5 +20,8 @@ public class VenderResourse  {
     private String updatedDate;
     private String deletedBy;
     private String deletedDate;
+    private String availableTickets;
+    private String totalTickets;
+    private String eventname;
 
 }

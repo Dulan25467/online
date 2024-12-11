@@ -16,7 +16,7 @@ public class TicketPoolResourse {
     private String eventTime;
     private String eventCategory;
     private String eventContact;
-    private String totalTickets;
+    private String vendor_get_tickets;
     private String availableTickets;
     private double ticketPrice;
     private int maxTicketCapacity;

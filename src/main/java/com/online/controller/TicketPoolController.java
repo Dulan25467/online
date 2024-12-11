@@ -1,6 +1,7 @@
 package com.online.controller;
 
 
+import com.online.domain.TicketPool;
 import com.online.exeption.ApiResponse;
 import com.online.exeption.CommonExeption;
 import com.online.resource.TicketPoolResourse;
@@ -24,30 +25,6 @@ public class TicketPoolController {
         this.ticketPoolService = ticketPoolService;
     }
 
-    @PostMapping("/addEvent")
-    public ResponseEntity<ApiResponse> addEvent(
-            @RequestBody TicketPoolResourse ticketPoolResourse,
-            @RequestParam Long vendorId,
-            @RequestParam String username) { // Accept username
-        CommonExeption exception = new CommonExeption();
-
-        // Validate ticket pool details
-        if (ticketPoolResourse.getEventName() == null || ticketPoolResourse.getEventName().isEmpty()) {
-            exception.addError("eventName", "Event name is required");
-        }
-        if (ticketPoolResourse.getEventLocation() == null || ticketPoolResourse.getEventLocation().isEmpty()) {
-            exception.addError("eventLocation", "Event location is required");
-        }
-        if (!exception.getErrors().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse("Invalid ticket pool details", false, exception.getErrors()));
-        }
-
-        // Save the ticket pool details
-        TicketPoolResourse savedTicketPool = ticketPoolService.addEvent(ticketPoolResourse, vendorId, username);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ApiResponse("Event added successfully", true, savedTicketPool));
-    }
 
     @PostMapping("/createEvent")
     public ResponseEntity<ApiResponse> createEvent(
@@ -129,45 +106,6 @@ public class TicketPoolController {
         }
     }
 
-    @PutMapping("/updateEvent/{vendorId}")
-    public ResponseEntity<ApiResponse> updateEvent(
-            @RequestBody TicketPoolResourse ticketPoolResourse,
-            @RequestParam Long vendorId,
-            @RequestParam String username) {
-
-            CommonExeption exception = new CommonExeption();
-
-            // Validate the ticket pool details
-            if (ticketPoolResourse.getEventName() == null || ticketPoolResourse.getEventName().isEmpty()) {
-            exception.addError("eventName", "Event name is required");
-        }
-        if (ticketPoolResourse.getEventLocation() == null || ticketPoolResourse.getEventLocation().isEmpty()) {
-            exception.addError("eventLocation", "Event location is required");
-        }
-        if (ticketPoolResourse.getEventDate() == null || ticketPoolResourse.getEventDate().isEmpty()) {
-            exception.addError("eventDate", "Event date is required");
-        }
-        if (ticketPoolResourse.getEventTime() == null || ticketPoolResourse.getEventTime().isEmpty()) {
-            exception.addError("eventTime", "Event time is required");
-        }
-        if (!exception.getErrors().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse("Invalid ticket pool details", false, exception.getErrors()));
-        }
-
-        // Call the service method to update the event
-        try {
-            TicketPoolResourse savedTicketPool = ticketPoolService.updateEvent(ticketPoolResourse, vendorId, username);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ApiResponse("Event updated successfully", true, savedTicketPool));
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse(ex.getMessage(), false, null));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("An unexpected error occurred while updating the event", false, null));
-        }
-    }
 
 
     @DeleteMapping("/deleteEvent/{id}")
@@ -230,5 +168,44 @@ public class TicketPoolController {
                     .body(new ApiResponse("Failed to fetch booked tickets", false, null));
         }
     }
+
+    @PostMapping("/addVendorTickets/{eventId}/{vendorId}")
+    public ResponseEntity<ApiResponse> addVendorTickets(
+            @PathVariable Long eventId,
+            @PathVariable Long vendorId,
+            @RequestBody Map<String, Integer> request) {
+
+        int ticketsToAdd = request.get("ticketsToAdd");
+
+        // Validate the number of tickets
+        if (ticketsToAdd <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse("Please enter a valid number of tickets.", false, null));
+        }
+
+        try {
+            TicketPoolResourse updatedEvent = ticketPoolService.addVendorTickets(eventId, vendorId, ticketsToAdd);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new ApiResponse("Tickets added successfully", true, updatedEvent));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ApiResponse(ex.getMessage(), false, null));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("An unexpected error occurred while adding tickets", false, null));
+        }
+    }
+
+    @GetMapping("/vendorTicketHistory/{vendorId}")
+    public ResponseEntity<ApiResponse> getVendorTicketHistory(@PathVariable Long vendorId) {
+        try {
+            List<TicketPoolResourse> ticketHistory = ticketPoolService.getVendorTicketHistory(vendorId);
+            return ResponseEntity.ok(new ApiResponse("Vendor ticket history fetched successfully", true, ticketHistory));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("Failed to fetch vendor ticket history", false, null));
+        }
+    }
+
 
 }

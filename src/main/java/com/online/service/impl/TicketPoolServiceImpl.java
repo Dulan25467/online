@@ -24,10 +24,10 @@ public class TicketPoolServiceImpl implements TicketPoolService {
     private final TicketPoolDao ticketPoolDao;
     private final ModelMapper modelMapper;
     private final VendorDao vendorDao;
-    private final CustomerDao  customerDao;
+    private final CustomerDao customerDao;
 
     @Autowired
-    public TicketPoolServiceImpl(TicketPoolDao ticketPoolDao , VendorDao vendorDao, CustomerDao customerDao, ModelMapper modelMapper) {
+    public TicketPoolServiceImpl(TicketPoolDao ticketPoolDao, VendorDao vendorDao, CustomerDao customerDao, ModelMapper modelMapper) {
         this.ticketPoolDao = ticketPoolDao;
         this.modelMapper = new ModelMapper();
         this.vendorDao = vendorDao;
@@ -35,52 +35,6 @@ public class TicketPoolServiceImpl implements TicketPoolService {
 
     }
 
-    @Override
-    public TicketPoolResourse addEvent(TicketPoolResourse ticketPoolResourse, Long vendorId, String username) {
-        // Fetch the vendor using vendorId
-        Optional<VendorDetail> optionalVendor = vendorDao.findById(vendorId);
-        if (optionalVendor.isEmpty()) {
-            throw new IllegalArgumentException("Vendor with ID " + vendorId + " not found");
-        }
-        VendorDetail vendor = optionalVendor.get();
-
-        // Map TicketPoolResource to TicketPool
-        TicketPool ticketPool = new TicketPool();
-        ticketPool.setEventName(ticketPoolResourse.getEventName());
-        ticketPool.setEventDescription(ticketPoolResourse.getEventDescription());
-        ticketPool.setEventLocation(ticketPoolResourse.getEventLocation());
-        ticketPool.setEventDate(ticketPoolResourse.getEventDate());
-        ticketPool.setEventTime(ticketPoolResourse.getEventTime());
-        ticketPool.setEventCategory(ticketPoolResourse.getEventCategory());
-        ticketPool.setEventContact(ticketPoolResourse.getEventContact());
-        ticketPool.setTotalTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
-        ticketPool.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
-        ticketPool.setStatusMessage("Scheduled");
-        ticketPool.setCreatedBy("Vendor " + vendorId + " - " + username); // Include username
-        ticketPool.setCreatedDate(LocalDateTime.now().toString());
-
-        // Save ticket pool details
-        TicketPool savedEvent = ticketPoolDao.save(ticketPool);
-
-        // Update vendor with event details
-        vendor.setEventname(ticketPoolResourse.getEventName());
-        vendor.setEventDescription(ticketPoolResourse.getEventDescription());
-        vendor.setEventLocation(ticketPoolResourse.getEventLocation());
-        vendor.setEventDate(ticketPoolResourse.getEventDate());
-        vendor.setEventTime(ticketPoolResourse.getEventTime());
-        vendor.setEventCategory(ticketPoolResourse.getEventCategory());
-        vendor.setEventContact(ticketPoolResourse.getEventContact());
-        vendor.setTotalTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
-        vendor.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
-        vendor.setUpdatedBy(username); // Set username as the updater
-        vendor.setUpdatedDate(LocalDateTime.now().toString());
-
-        // Save updated vendor details
-        vendorDao.save(vendor);
-
-        // Return the mapped response
-        return modelMapper.map(savedEvent, TicketPoolResourse.class);
-    }
 
     @Override
     public TicketPoolResourse createEvent(TicketPoolResourse ticketPoolResourse) {
@@ -103,11 +57,11 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         }
 
         // Validate and parse totalTickets
-        if (ticketPoolResourse.getTotalTickets() == null) {
+        if (ticketPoolResourse.getVendor_get_tickets() == null) {
             throw new IllegalArgumentException("Total tickets cannot be null");
         }
         try {
-            ticketPool.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
+            ticketPool.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getVendor_get_tickets()));
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Invalid total tickets format", e);
         }
@@ -148,10 +102,10 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         ticketPool.setTicketPrice(Double.parseDouble(String.valueOf(ticketPoolResourse.getTicketPrice())));
         ticketPool.setUpdatedBy("Admin");
         ticketPool.setUpdatedDate(LocalDateTime.now().toString());
-        TicketPool updatedEvent = ticketPoolDao.save(ticketPool);
+        TicketPool modifyEvent = ticketPoolDao.save(ticketPool);
 
         // Return the updated event as a response
-        return modelMapper.map(updatedEvent, TicketPoolResourse.class);
+        return modelMapper.map(modifyEvent, TicketPoolResourse.class);
     }
 
 
@@ -162,49 +116,6 @@ public class TicketPoolServiceImpl implements TicketPoolService {
                 .map(event -> modelMapper.map(event, TicketPoolResourse.class))
                 .collect(Collectors.toList());
     }
-
-    @Override
-    @Transactional
-    public TicketPoolResourse updateEvent(TicketPoolResourse ticketPoolResourse, Long vendorId, String username) {
-        // Fetch the existing event
-        TicketPool ticketPool = ticketPoolDao.findById(vendorId)
-                .orElseThrow(() -> new IllegalArgumentException("Event with ID " + vendorId + " not found"));
-
-        // Update event details
-        ticketPool.setEventName(ticketPoolResourse.getEventName());
-        ticketPool.setEventDescription(ticketPoolResourse.getEventDescription());
-        ticketPool.setEventLocation(ticketPoolResourse.getEventLocation());
-        ticketPool.setEventDate(ticketPoolResourse.getEventDate());
-        ticketPool.setEventTime(ticketPoolResourse.getEventTime());
-        ticketPool.setEventCategory(ticketPoolResourse.getEventCategory());
-        ticketPool.setEventContact(ticketPoolResourse.getEventContact());
-        ticketPool.setTotalTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
-        ticketPool.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets())); // Assuming all tickets are available after update
-        ticketPool.setUpdatedBy(username);
-        ticketPool.setUpdatedDate(LocalDateTime.now().toString());
-        TicketPool updatedEvent = ticketPoolDao.save(ticketPool);
-
-        // Fetch and update the vendor
-        VendorDetail vendor = vendorDao.findById(vendorId)
-                .orElseThrow(() -> new IllegalArgumentException("Vendor with ID " + vendorId + " not found"));
-
-        vendor.setEventname(ticketPoolResourse.getEventName());
-        vendor.setEventDescription(ticketPoolResourse.getEventDescription());
-        vendor.setEventLocation(ticketPoolResourse.getEventLocation());
-        vendor.setEventDate(ticketPoolResourse.getEventDate());
-        vendor.setEventTime(ticketPoolResourse.getEventTime());
-        vendor.setEventCategory(ticketPoolResourse.getEventCategory());
-        vendor.setEventContact(ticketPoolResourse.getEventContact());
-        vendor.setTotalTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
-        vendor.setAvailableTickets(Integer.parseInt(ticketPoolResourse.getTotalTickets()));
-        vendor.setUpdatedBy(username);
-        vendor.setUpdatedDate(LocalDateTime.now().toString());
-        vendorDao.save(vendor);
-
-        // Return the updated event as a response
-        return modelMapper.map(updatedEvent, TicketPoolResourse.class);
-    }
-
 
 
     @Override
@@ -269,4 +180,50 @@ public class TicketPoolServiceImpl implements TicketPoolService {
         return event.getBookedTickets();
     }
 
+    @Override
+    public TicketPoolResourse addVendorTickets(Long eventId, Long vendorId, int ticketsToAdd) {
+        // Fetch the vendor and event
+        VendorDetail vendor = vendorDao.findById(vendorId)
+                .orElseThrow(() -> new IllegalArgumentException("Vendor with ID " + vendorId + " not found"));
+        TicketPool event = ticketPoolDao.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event with ID " + eventId + " not found"));
+
+        // Validate the number of tickets
+        if (ticketsToAdd > event.getAvailableTickets()) {
+            throw new IllegalArgumentException("Not enough tickets available for adding");
+        }
+
+        // Update the event details
+        event.setAvailableTickets(event.getAvailableTickets() - ticketsToAdd);
+        event.setUpdatedBy("Vendor " + vendorId);
+        event.setUpdatedDate(LocalDateTime.now().toString());
+        ticketPoolDao.save(event);
+
+        // Update the vendor details with event information
+        vendor.setTotalTickets(vendor.getTotalTickets() + ticketsToAdd);
+        vendor.setUpdatedBy("Event " + eventId);
+        vendor.setUpdatedDate(LocalDateTime.now().toString());
+        vendor.setEventName(event.getEventName());
+        vendor.setEventDescription(event.getEventDescription());
+        vendor.setEventLocation(event.getEventLocation());
+        vendor.setEventDate(event.getEventDate());
+        vendor.setEventTime(event.getEventTime());
+        vendor.setEventCategory(event.getEventCategory());
+        vendor.setEventContact(event.getEventContact());
+        vendor.setMaxTicketCapacity(event.getMaxTicketCapacity());
+        vendor.setAvailableTickets(event.getAvailableTickets());
+        vendorDao.save(vendor);
+
+        // Return the updated event details
+        return modelMapper.map(event, TicketPoolResourse.class);
+    }
+
+    @Override
+    public List<TicketPoolResourse> getVendorTicketHistory(Long vendorId) {
+        List<TicketPool> events = ticketPoolDao.findAll();
+        return events.stream()
+                .filter(event -> event.getVendors().equals(vendorId))
+                .map(event -> modelMapper.map(event, TicketPoolResourse.class))
+                .collect(Collectors.toList());
+    }
 }

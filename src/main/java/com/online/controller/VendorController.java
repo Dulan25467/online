@@ -15,4 +15,8 @@ public class VendorController {
     @Autowired
     private VendorService vendorService;
 
+    //vender add the tickes for the buy check ticket_pool_details table max_ticket_capacity and vendor get to buy tickets
+    //max_ticket_capacity >= total_tickets
+
+
 }

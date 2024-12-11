@@ -2,6 +2,9 @@ package com.ticketingsystem.producerconsumer;
 
 import com.ticketingsystem.model.TicketPool;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TicketManager {
     private TicketPool ticketPool;
     private int maxTicketCapacity;
@@ -17,6 +20,8 @@ public class TicketManager {
     private Thread vendorThread;
     private Thread customerThread;
 
+    private Map<Integer, String> vipCustomers;
+
     public TicketManager(int maxTicketCapacity, int totalTicketsAvailable, int ticketReleaseRate, int customerRetrievalRate) {
         this.maxTicketCapacity = maxTicketCapacity;
         this.totalTicketsAvailable = totalTicketsAvailable;
@@ -27,6 +32,7 @@ public class TicketManager {
         this.vendorReleasedTickets = 0;
         this.customerBoughtTickets = 0;
         this.isRunning = false; // Default to not running
+        this.vipCustomers = new HashMap<>();
     }
 
     public void startOperations() {
@@ -111,13 +117,30 @@ public class TicketManager {
 
     public void buyTickets(int numberOfTickets) {
         for (int i = 0; i < numberOfTickets; i++) {
-            String ticket = ticketPool.retrieveTicket();
-            if (ticket != null) {
-                customerBoughtTickets++;
-                System.out.println("Customer retrieved: " + ticket);
+            // Check and release tickets to VIP customers first
+            if (!vipCustomers.isEmpty()) {
+                for (Map.Entry<Integer, String> entry : vipCustomers.entrySet()) {
+                    String ticket = ticketPool.retrieveTicket();
+                    if (ticket != null) {
+                        customerBoughtTickets++;
+                        System.out.println("VIP Customer retrieved: " + ticket + " (ID: " + entry.getKey() + ", Name: " + entry.getValue() + ")");
+                        vipCustomers.remove(entry.getKey());
+                        break;
+                    } else {
+                        System.out.println("No tickets available for retrieval.");
+                        break;
+                    }
+                }
             } else {
-                System.out.println("No tickets available for retrieval.");
-                break;
+                // Release tickets to regular customers
+                String ticket = ticketPool.retrieveTicket();
+                if (ticket != null) {
+                    customerBoughtTickets++;
+                    System.out.println("Customer retrieved: " + ticket);
+                } else {
+                    System.out.println("No tickets available for retrieval.");
+                    break;
+                }
             }
         }
         checkAndStopSystem(); // Check if the system should stop
@@ -158,5 +181,10 @@ public class TicketManager {
         this.vendorReleasedTickets = 0; // Reset the released tickets count
         this.customerBoughtTickets = 0; // Reset the bought tickets count
         System.out.println("Configuration updated.");
+    }
+
+    public void addVIPCustomer(int vipCustomerId, String vipCustomerName) {
+        vipCustomers.put(vipCustomerId, vipCustomerName);
+        System.out.println("VIP Customer added: ID=" + vipCustomerId + ", Name=" + vipCustomerName);
     }
 }
