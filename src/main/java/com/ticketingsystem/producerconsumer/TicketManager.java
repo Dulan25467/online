@@ -194,6 +194,7 @@ public class TicketManager {
 
     public void addVIPCustomer(int vipCustomerId, String vipCustomerName) {
         vipCustomers.put(vipCustomerId, vipCustomerName);
+        saveConfigurationToDatabase(); // Save VIP customer to database
         System.out.println("VIP Customer added: ID=" + vipCustomerId + ", Name=" + vipCustomerName);
     }
 
@@ -209,14 +210,18 @@ public class TicketManager {
     }
 
     private void saveConfigurationToDatabase() {
-        String sql = "INSERT INTO ticket_system_cli (maxTicketCapacity, totalTicketsAvailable, ticketReleaseRate, customerRetrievalRate) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO ticket_system_cli (maxTicketCapacity, totalTicketsAvailable, ticketReleaseRate, customerRetrievalRate, vipCustomerId, vipCustomerName) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, maxTicketCapacity);
-            pstmt.setInt(2, totalTicketsAvailable);
-            pstmt.setInt(3, ticketReleaseRate);
-            pstmt.setInt(4, customerRetrievalRate);
-            pstmt.executeUpdate();
+            for (Map.Entry<Integer, String> entry : vipCustomers.entrySet()) {
+                pstmt.setInt(1, maxTicketCapacity);
+                pstmt.setInt(2, totalTicketsAvailable);
+                pstmt.setInt(3, ticketReleaseRate);
+                pstmt.setInt(4, customerRetrievalRate);
+                pstmt.setInt(5, entry.getKey());
+                pstmt.setString(6, entry.getValue());
+                pstmt.executeUpdate();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
