@@ -1,7 +1,12 @@
 package com.ticketingsystem.producerconsumer;
 
+import com.ticketingsystem.model.Ticket;
 import com.ticketingsystem.model.TicketPool;
+import com.ticketingsystem.util.DatabaseUtil;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,6 +110,9 @@ public class TicketManager {
             // Add ticket to the pool
             if (ticketPool.addTicket("Ticket-" + (vendorReleasedTickets + 1))) {
                 vendorReleasedTickets++;
+                Ticket ticket = new Ticket();
+                ticket.setTicketName("Ticket-" + vendorReleasedTickets);
+                saveTicketToDatabase(ticket); // Save to database
                 System.out.println("Vendor added: Ticket-" + vendorReleasedTickets
                         + " (Total released: " + vendorReleasedTickets + ")");
             } else {
@@ -180,11 +188,37 @@ public class TicketManager {
         this.ticketPool.setMaxCapacity(maxTicketCapacity);
         this.vendorReleasedTickets = 0; // Reset the released tickets count
         this.customerBoughtTickets = 0; // Reset the bought tickets count
+        saveConfigurationToDatabase();
         System.out.println("Configuration updated.");
     }
 
     public void addVIPCustomer(int vipCustomerId, String vipCustomerName) {
         vipCustomers.put(vipCustomerId, vipCustomerName);
         System.out.println("VIP Customer added: ID=" + vipCustomerId + ", Name=" + vipCustomerName);
+    }
+
+    private void saveTicketToDatabase(Ticket ticket) {
+        String sql = "INSERT INTO ticket (ticketName) VALUES (?)";
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, ticket.getTicketName());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveConfigurationToDatabase() {
+        String sql = "INSERT INTO ticket_system_cli (maxTicketCapacity, totalTicketsAvailable, ticketReleaseRate, customerRetrievalRate) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, maxTicketCapacity);
+            pstmt.setInt(2, totalTicketsAvailable);
+            pstmt.setInt(3, ticketReleaseRate);
+            pstmt.setInt(4, customerRetrievalRate);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

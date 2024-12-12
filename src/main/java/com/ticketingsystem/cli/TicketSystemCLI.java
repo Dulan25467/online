@@ -3,14 +3,16 @@ package com.ticketingsystem.cli;
 import com.ticketingsystem.producerconsumer.TicketManager;
 
 import java.util.Scanner;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-public class TicketSystemCLI extends TicketSystemMain {
+public class TicketSystemCLI {
     private static final Logger logger = Logger.getLogger(TicketSystemCLI.class.getName());
     private static FileHandler fileHandler;
+    private static ConsoleHandler consoleHandler;
 
     // Custom JSON formatter
     static class JSONFormatter extends Formatter {
@@ -32,6 +34,11 @@ public class TicketSystemCLI extends TicketSystemMain {
             fileHandler = new FileHandler("ticketing.log", true);
             fileHandler.setFormatter(new JSONFormatter());
             logger.addHandler(fileHandler);
+
+            // Set up console logging
+            consoleHandler = new ConsoleHandler();
+            consoleHandler.setFormatter(new JSONFormatter());
+            logger.addHandler(consoleHandler);
         } catch (Exception e) {
             System.out.println("Error setting up log file: " + e.getMessage());
             return;  // Exit if there's an error setting up the logger
@@ -76,7 +83,7 @@ public class TicketSystemCLI extends TicketSystemMain {
             System.out.println("5. Check Ticket System Status");
             System.out.println("6. Exit");
             System.out.print("Enter command: ");
-            String command = scanner.nextLine().trim().toUpperCase();
+            String command = scanner.next().trim().toUpperCase();
 
             switch (command) {
                 case "1":

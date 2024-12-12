@@ -1,12 +1,61 @@
 package com.ticketingsystem.cli;
 
 import com.ticketingsystem.producerconsumer.TicketManager;
+import com.ticketingsystem.util.DatabaseUtil;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 public class TicketSystemMain {
+    private static final Logger logger = Logger.getLogger(TicketSystemMain.class.getName());
+    private static FileHandler fileHandler;
+    private static ConsoleHandler consoleHandler;
+
+    // Custom JSON formatter
+    static class JSONFormatter extends Formatter {
+        @Override
+        public String format(LogRecord record) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("{")
+                    .append("\"timestamp\": \"").append(record.getMillis()).append("\", ")
+                    .append("\"level\": \"").append(record.getLevel()).append("\", ")
+                    .append("\"message\": \"").append(formatMessage(record)).append("\"")
+                    .append("}\n");
+            return sb.toString();
+        }
+    }
 
     public static void main(String[] args) {
+        try {
+            // Ensure the directory exists
+            File logDir = new File("com/ticketingsystem/logs");
+            if (!logDir.exists()) {
+                logDir.mkdirs();
+            }
+
+            // Set up logging to write to ticketing.log with a custom JSON formatter
+            fileHandler = new FileHandler("com/ticketingsystem/logs/ticketing.log", true);
+            fileHandler.setFormatter(new JSONFormatter());
+            logger.addHandler(fileHandler);
+
+            // Set up console logging
+            consoleHandler = new ConsoleHandler();
+            consoleHandler.setFormatter(new JSONFormatter());
+            logger.addHandler(consoleHandler);
+        } catch (IOException e) {
+            System.out.println("Error setting up log file: " + e.getMessage());
+            return;  // Exit if there's an error setting up the logger
+        }
+
+        // Create the ticket table if it doesn't exist
+        DatabaseUtil.createTicketTable();
+
         System.out.println("Welcome to the Ticketing System CLI");
 
         // Default values for configuration
@@ -35,34 +84,28 @@ public class TicketSystemMain {
 
             switch (command) {
                 case "1":
-                    // Call to configure ticket system
                     configureTicketSystem(ticketManager);
                     break;
 
                 case "2":
-                    // Call to configure VIP customers
                     configureVIPCustomers(ticketManager);
                     break;
 
                 case "3":
-                    // Start Ticket System
                     ticketManager.startOperations();
                     break;
 
                 case "4":
-                    // Stop Ticket System
                     ticketManager.stopOperations();
                     break;
 
                 case "5":
-                    // Check Ticket System Status
                     checkTicketSystemStatus(ticketManager);
                     break;
 
                 case "6":
-                    // Exit
                     if (ticketManager.isRunning()) {
-                        ticketManager.stopOperations(); // Ensure operations are stopped before exiting
+                        ticketManager.stopOperations();
                     }
                     running = false;
                     System.out.println("Exiting the system. Goodbye!");
@@ -79,7 +122,6 @@ public class TicketSystemMain {
     private static void configureTicketSystem(TicketManager ticketManager) {
         System.out.println("Configuring Ticket System...");
 
-        // Allow user to modify configuration, for example:
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter Max Ticket Capacity: ");
@@ -94,7 +136,6 @@ public class TicketSystemMain {
         System.out.print("Enter Customer Retrieval Rate: ");
         int customerRetrievalRate = scanner.nextInt();
 
-        // Update TicketManager with new configuration
         ticketManager.updateConfiguration(maxTicketCapacity, totalTicketsAvailable, ticketReleaseRate, customerRetrievalRate);
 
         System.out.println("Ticket System configuration updated.");
@@ -103,16 +144,23 @@ public class TicketSystemMain {
     private static void configureVIPCustomers(TicketManager ticketManager) {
         System.out.println("Configuring VIP Customers...");
 
-        // Allow user to modify VIP customer configuration, for example:
         Scanner scanner = new Scanner(System.in);
+        int vipCustomerId = -1;
 
-        System.out.print("Enter VIP Customer ID: ");
-        int vipCustomerId = scanner.nextInt();
+        while (true) {
+            System.out.print("Enter VIP Customer ID: ");
+            if (scanner.hasNextInt()) {
+                vipCustomerId = scanner.nextInt();
+                break;
+            } else {
+                System.out.println("Invalid input. Please enter a valid integer for VIP Customer ID.");
+                scanner.next(); // Clear the invalid input
+            }
+        }
 
         System.out.print("Enter VIP Customer Name: ");
         String vipCustomerName = scanner.next();
 
-        // Update TicketManager with new VIP customer configuration
         ticketManager.addVIPCustomer(vipCustomerId, vipCustomerName);
 
         System.out.println("VIP Customer configuration updated.");
@@ -129,5 +177,12 @@ public class TicketSystemMain {
         System.out.println("Customer bought tickets: " + ticketManager.getCustomerBoughtTickets());
         System.out.println("System available tickets: " + ticketManager.getAvailableTickets());
         System.out.println("Currently available tickets: " + ticketManager.getCurrentlyAvailableTickets());
+    }
+    public class Main {
+        public static void main(String[] args) {
+            DatabaseUtil.createTicketTable();
+            TicketManager ticketManager = new TicketManager(100, 50, 5, 3);
+            ticketManager.startOperations();
+        }
     }
 }
