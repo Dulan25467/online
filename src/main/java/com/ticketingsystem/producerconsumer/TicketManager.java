@@ -120,6 +120,7 @@ public class TicketManager {
                 break;
             }
         }
+        updateTicketCountsInDatabase(); // Update ticket counts in the database
         checkAndStopSystem(); // Check if the system should stop
     }
 
@@ -151,6 +152,7 @@ public class TicketManager {
                 }
             }
         }
+        updateTicketCountsInDatabase(); // Update ticket counts in the database
         checkAndStopSystem(); // Check if the system should stop
     }
 
@@ -222,6 +224,18 @@ public class TicketManager {
                 pstmt.setString(6, entry.getValue());
                 pstmt.executeUpdate();
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateTicketCountsInDatabase() {
+        String sql = "UPDATE ticket_system_cli SET vendorReleasedTickets = ?, customerBoughtTickets = ? ORDER BY id DESC LIMIT 1";
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, vendorReleasedTickets);
+            pstmt.setInt(2, customerBoughtTickets);
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
