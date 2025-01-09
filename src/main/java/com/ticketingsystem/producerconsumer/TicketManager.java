@@ -159,8 +159,9 @@ public class TicketManager {
     private void checkAndStopSystem() {
         if (vendorReleasedTickets >= totalTicketsAvailable
                 && customerBoughtTickets >= totalTicketsAvailable) {
-            System.out.println("All tickets have been released and sold. Stopping the system...");
             stopOperations();
+            System.out.println("All tickets have been released and sold. Go to menu and enter 4...");
+
         }
     }
 
