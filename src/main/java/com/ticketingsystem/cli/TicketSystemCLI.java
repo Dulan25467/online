@@ -3,7 +3,6 @@ package com.ticketingsystem.cli;
 import com.ticketingsystem.producerconsumer.TicketManager;
 
 import java.util.Scanner;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
@@ -12,7 +11,6 @@ import java.util.logging.Logger;
 public class TicketSystemCLI {
     private static final Logger logger = Logger.getLogger(TicketSystemCLI.class.getName());
     private static FileHandler fileHandler;
-    private static ConsoleHandler consoleHandler;
 
     // Custom JSON formatter
     static class JSONFormatter extends Formatter {
@@ -34,43 +32,13 @@ public class TicketSystemCLI {
             fileHandler = new FileHandler("ticketing.log", true);
             fileHandler.setFormatter(new JSONFormatter());
             logger.addHandler(fileHandler);
-
-            // Set up console logging
-            consoleHandler = new ConsoleHandler();
-            consoleHandler.setFormatter(new JSONFormatter());
-            logger.addHandler(consoleHandler);
         } catch (Exception e) {
             System.out.println("Error setting up log file: " + e.getMessage());
             return;  // Exit if there's an error setting up the logger
         }
 
+        TicketManager ticketManager = new TicketManager(100, 100, 5, 5);
         Scanner scanner = new Scanner(System.in);
-
-        // Get the total tickets available
-        System.out.print("Enter total tickets available: ");
-        int totalTickets = scanner.nextInt();
-        logger.info("Total tickets available: " + totalTickets);
-
-        // Get the ticket release rate
-        System.out.print("Enter ticket release rate (per second): ");
-        int ticketReleaseRate = scanner.nextInt();
-        logger.info("Ticket release rate (per second): " + ticketReleaseRate);
-
-        // Get the customer retrieval rate
-        System.out.print("Enter customer retrieval rate (per second): ");
-        int customerRetrievalRate = scanner.nextInt();
-        logger.info("Customer retrieval rate (per second): " + customerRetrievalRate);
-
-        // Get the max ticket capacity
-        System.out.print("Enter max ticket capacity: ");
-        int maxTicketCapacity = scanner.nextInt();
-        logger.info("Max ticket capacity: " + maxTicketCapacity);
-
-        // Initialize the ticket manager with configuration values
-        TicketManager ticketManager = new TicketManager(maxTicketCapacity, totalTickets, ticketReleaseRate, customerRetrievalRate);
-
-        // Ensure the logs are immediately written to the file by flushing the FileHandler
-        fileHandler.flush();
 
         boolean running = true;
 
@@ -87,26 +55,33 @@ public class TicketSystemCLI {
 
             switch (command) {
                 case "1":
+                    logger.info("Selected option: Configure Ticket System");
                     configureTicketSystem(ticketManager);
                     break;
 
                 case "2":
+                    logger.info("Selected option: Configure VIP Customers");
                     configureVIPCustomers(ticketManager);
                     break;
 
                 case "3":
+                    logger.info("Selected option: Start Ticket System");
                     ticketManager.startOperations();
+                    System.out.println("Ticket system started.");
                     break;
 
                 case "4":
+                    logger.info("Selected option: Stop Ticket System");
                     ticketManager.stopOperations();
                     break;
 
                 case "5":
+                    logger.info("Selected option: Check Ticket System Status");
                     checkTicketSystemStatus(ticketManager);
                     break;
 
                 case "6":
+                    logger.info("Selected option: Exit");
                     if (ticketManager.isRunning()) {
                         ticketManager.stopOperations();
                     }
@@ -115,6 +90,7 @@ public class TicketSystemCLI {
                     break;
 
                 default:
+                    logger.warning("Invalid command entered: " + command);
                     System.out.println("Invalid command. Please try again.");
             }
         }
@@ -141,6 +117,11 @@ public class TicketSystemCLI {
 
         ticketManager.updateConfiguration(maxTicketCapacity, totalTicketsAvailable, ticketReleaseRate, customerRetrievalRate);
 
+        logger.info("Ticket System configuration updated: MaxTicketCapacity=" + maxTicketCapacity +
+                ", TotalTicketsAvailable=" + totalTicketsAvailable +
+                ", TicketReleaseRate=" + ticketReleaseRate +
+                ", CustomerRetrievalRate=" + customerRetrievalRate);
+
         System.out.println("Ticket System configuration updated.");
     }
 
@@ -157,6 +138,8 @@ public class TicketSystemCLI {
 
         ticketManager.addVIPCustomer(vipCustomerId, vipCustomerName);
 
+        logger.info("VIP Customer configuration updated: ID=" + vipCustomerId + ", Name=" + vipCustomerName);
+
         System.out.println("VIP Customer configuration updated.");
     }
 
@@ -171,5 +154,11 @@ public class TicketSystemCLI {
         System.out.println("Customer bought tickets: " + ticketManager.getCustomerBoughtTickets());
         System.out.println("System available tickets: " + ticketManager.getAvailableTickets());
         System.out.println("Currently available tickets: " + ticketManager.getCurrentlyAvailableTickets());
+
+        logger.info("Checked Ticket System Status: isRunning=" + ticketManager.isRunning() +
+                ", VendorReleasedTickets=" + ticketManager.getVendorReleasedTickets() +
+                ", CustomerBoughtTickets=" + ticketManager.getCustomerBoughtTickets() +
+                ", AvailableTickets=" + ticketManager.getAvailableTickets() +
+                ", CurrentlyAvailableTickets=" + ticketManager.getCurrentlyAvailableTickets());
     }
 }
